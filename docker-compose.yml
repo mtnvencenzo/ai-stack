@@ -1,0 +1,217 @@
+name: ai-stack
+
+services:
+  # UI for chatting with local models (Ollama) or OpenAI-compatible endpoints (vLLM)
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:latest
+    depends_on:
+      - ollama
+    ports:
+      - "${OPENWEBUI_PORT:-3000}:8080"
+    environment:
+      # Point WebUI to Ollama (local models)
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # Optionally, if running vLLM profile, expose OpenAI-compatible endpoint
+      - OPENAI_API_BASE_URL=http://vllm:8000
+      - ENABLE_OPENAI_API=true
+      - WEBUI_NAME=AI Stack WebUI
+      - TZ=${TZ:-UTC}
+    volumes:
+      - ./volumes/open-webui:/app/backend/data
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Local LLM runtime (CPU by default; uses GPU automatically if NVIDIA runtime is available)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      # Uncomment if you have NVIDIA Container Toolkit installed and want to force GPU visibility
+      # - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./volumes/ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:11434/api/tags > /dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Vector database for RAG workloads
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "${QDRANT_HTTP_PORT:-6333}:6333"
+      - "${QDRANT_GRPC_PORT:-6334}:6334"
+    environment:
+      - QDRANT__LOG_LEVEL=INFO
+    volumes:
+      - ./volumes/qdrant:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:6333/readyz > /dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Embeddings server (supports popular models like BGE/E5; set HF token to speed up/enable private models)
+  embeddings:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
+    # NOTE: If using GPU, run under the `gpu` profile and ensure NVIDIA drivers/toolkit are installed.
+    command: ["--model-id", "${TEI_MODEL_ID:-mixedbread-ai/mxbai-embed-large-v1}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+      - HF_HOME=/root/.cache/huggingface
+      - CUDA_VISIBLE_DEVICES=
+    ports:
+      - "${TEI_PORT:-8989}:80"
+    volumes:
+      - ./volumes/hf_cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Experiment tracking server (file-based backend + artifacts for local dev)
+  mlflow:
+    build:
+      context: ./containers/mlflow
+      dockerfile: Dockerfile
+    ports:
+      - "${MLFLOW_PORT:-5000}:5000"
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:////mlflow/mlruns.db
+      - MLFLOW_ARTIFACT_ROOT=/mlflow/artifacts
+      - MLFLOW_HOST=0.0.0.0
+      - MLFLOW_PORT=5000
+    volumes:
+      - ./volumes/mlflow:/mlflow
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:5000/ > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # General-purpose cache/broker for pipelines and apps
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    volumes:
+      - ./volumes/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Batteries-included notebook environment
+  jupyter:
+    image: jupyter/datascience-notebook:latest
+    # Ensure files are saved to your repo and a persistent home
+    volumes:
+      - ./:/home/jovyan/work
+      - ./volumes/jupyter:/home/jovyan/.jupyter
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    environment:
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN:-ai-stack}
+      - TZ=${TZ:-UTC}
+      - GRANT_SUDO=yes
+    user: root
+    command: ["start-notebook.sh", "--NotebookApp.allow_origin=*"]
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Optional: modern orchestration for flows (disabled by default)
+  prefect:
+    image: prefecthq/prefect:2-latest
+    profiles: ["orchestration"]
+    ports:
+      - "${PREFECT_PORT:-4200}:4200"
+    environment:
+      - PREFECT_API_URL=http://prefect:4200/api
+    command: ["prefect", "server", "start", "--host", "0.0.0.0"]
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Optional: High-performance OpenAI-compatible LLM server (GPU strongly recommended)
+  vllm:
+    image: vllm/vllm-openai:latest
+    profiles: ["gpu"]
+    ports:
+      - "${VLLM_PORT:-8000}:8000"
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+      - TZ=${TZ:-UTC}
+    shm_size: "2g"
+    ipc: host
+    command: [
+      "--model", "${VLLM_MODEL_ID:-Qwen/Qwen2.5-7B-Instruct}",
+      "--dtype", "${VLLM_DTYPE:-float16}",
+      "--max-model-len", "${VLLM_MAXLEN:-8192}",
+      "--gpu-memory-utilization", "${VLLM_GPU_MEM_UTIL:-0.90}",
+      "--port", "8000"
+    ]
+    # Enable GPU if available (requires NVIDIA Container Toolkit)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    volumes:
+      - ./volumes/hf_cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:8000/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Optional: Visual builder for LLM apps and RAG pipelines
+  langflow:
+    image: langflowai/langflow:latest
+    profiles: ["studio"]
+    ports:
+      - "${LANGFLOW_PORT:-7860}:7860"
+    environment:
+      - LANGFLOW_DATABASE_URL=sqlite:////root/.langflow/langflow.db
+      - LANGFLOW_AUTO_LOGIN=true
+      - TZ=${TZ:-UTC}
+    volumes:
+      - ./volumes/langflow:/root/.langflow
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:7860/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+
+networks:
+  ai-network:
+    driver: bridge
