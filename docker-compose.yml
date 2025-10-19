@@ -12,12 +12,12 @@ services:
       # Point WebUI to Ollama (local models)
       - OLLAMA_BASE_URL=http://ollama:11434
       # Optionally, if running vLLM profile, expose OpenAI-compatible endpoint
-      - OPENAI_API_BASE_URL=http://vllm:8000
-      - ENABLE_OPENAI_API=true
+      # OPENAI_API_BASE_URL=http://vllm:8000
+      # ENABLE_OPENAI_API=true
       - WEBUI_NAME=AI Stack WebUI
       - TZ=${TZ:-UTC}
     volumes:
-      - ./volumes/open-webui:/app/backend/data
+      - "${HOME}/ai-stack/mnt/open-webui:/app/backend/data"
     restart: unless-stopped
     networks:
       - ai-network
@@ -32,7 +32,7 @@ services:
       # Uncomment if you have NVIDIA Container Toolkit installed and want to force GPU visibility
       # - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - ./volumes/ollama:/root/.ollama
+      - "${HOME}/ai-stack/mnt/ollama:/root/.ollama"
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost:11434/api/tags > /dev/null"]
       interval: 10s
@@ -51,7 +51,7 @@ services:
     environment:
       - QDRANT__LOG_LEVEL=INFO
     volumes:
-      - ./volumes/qdrant:/qdrant/storage
+      - "${HOME}/ai-stack/mnt/qdrant:/qdrant/storage"
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost:6333/readyz > /dev/null"]
       interval: 10s
@@ -65,7 +65,7 @@ services:
   embeddings:
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
     # NOTE: If using GPU, run under the `gpu` profile and ensure NVIDIA drivers/toolkit are installed.
-    command: ["--model-id", "${TEI_MODEL_ID:-mixedbread-ai/mxbai-embed-large-v1}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
+    command: ["--model-id", "${TEI_MODEL_ID:-BAAI/bge-m3}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
       - HF_HOME=/root/.cache/huggingface
@@ -73,7 +73,7 @@ services:
     ports:
       - "${TEI_PORT:-8989}:80"
     volumes:
-      - ./volumes/hf_cache:/root/.cache/huggingface
+      - "${HOME}/ai-stack/mnt/hf_cache:/root/.cache/huggingface"
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost/health > /dev/null"]
       interval: 10s
@@ -96,7 +96,7 @@ services:
       - MLFLOW_HOST=0.0.0.0
       - MLFLOW_PORT=5000
     volumes:
-      - ./volumes/mlflow:/mlflow
+      - "${HOME}/ai-stack/mnt/mlflow:/mlflow"
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost:5000/ > /dev/null"]
       interval: 10s
@@ -107,40 +107,40 @@ services:
       - ai-network
 
   # General-purpose cache/broker for pipelines and apps
-  redis:
-    image: redis:7-alpine
-    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
-    ports:
-      - "${REDIS_PORT:-6380}:6379"
-    volumes:
-      - ./volumes/redis:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 10
-    restart: unless-stopped
-    networks:
-      - ai-network
+  # redis:
+  #   image: redis:7-alpine
+  #   command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+  #   ports:
+  #     - "${REDIS_PORT:-6380}:6379"
+  #   volumes:
+  #     - "${HOME}/ai-stack/mnt/redis:/data"
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 10
+  #   restart: unless-stopped
+  #   networks:
+  #     - ai-network
 
   # Batteries-included notebook environment
-  jupyter:
-    image: jupyter/datascience-notebook:latest
-    # Ensure files are saved to your repo and a persistent home
-    volumes:
-      - ./:/home/jovyan/work
-      - ./volumes/jupyter:/home/jovyan/.jupyter
-    ports:
-      - "${JUPYTER_PORT:-8888}:8888"
-    environment:
-      - JUPYTER_TOKEN=${JUPYTER_TOKEN:-ai-stack}
-      - TZ=${TZ:-UTC}
-      - GRANT_SUDO=yes
-    user: root
-    command: ["start-notebook.sh", "--NotebookApp.allow_origin=*"]
-    restart: unless-stopped
-    networks:
-      - ai-network
+  # jupyter:
+  #   image: jupyter/datascience-notebook:latest
+  #   # Ensure files are saved to your repo and a persistent home
+  #   volumes:
+  #     - ./:/home/jovyan/work
+  #     - "${HOME}/ai-stack/mnt/jupyter:/home/jovyan/.jupyter"
+  #   ports:
+  #     - "${JUPYTER_PORT:-8888}:8888"
+  #   environment:
+  #     - JUPYTER_TOKEN=${JUPYTER_TOKEN:-ai-stack}
+  #     - TZ=${TZ:-UTC}
+  #     - GRANT_SUDO=yes
+  #   user: root
+  #   command: ["start-notebook.sh", "--NotebookApp.allow_origin=*"]
+  #   restart: unless-stopped
+  #   networks:
+  #     - ai-network
 
   # Optional: modern orchestration for flows (disabled by default)
   prefect:
@@ -156,60 +156,60 @@ services:
       - ai-network
 
   # Optional: High-performance OpenAI-compatible LLM server (GPU strongly recommended)
-  vllm:
-    image: vllm/vllm-openai:latest
-    profiles: ["gpu"]
-    ports:
-      - "${VLLM_PORT:-8000}:8000"
-    environment:
-      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
-      - TZ=${TZ:-UTC}
-    shm_size: "2g"
-    ipc: host
-    command: [
-      "--model", "${VLLM_MODEL_ID:-Qwen/Qwen2.5-7B-Instruct}",
-      "--dtype", "${VLLM_DTYPE:-float16}",
-      "--max-model-len", "${VLLM_MAXLEN:-8192}",
-      "--gpu-memory-utilization", "${VLLM_GPU_MEM_UTIL:-0.90}",
-      "--port", "8000"
-    ]
-    # Enable GPU if available (requires NVIDIA Container Toolkit)
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: ["gpu"]
-    volumes:
-      - ./volumes/hf_cache:/root/.cache/huggingface
-    healthcheck:
-      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:8000/health > /dev/null"]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-    restart: unless-stopped
-    networks:
-      - ai-network
+  # vllm:
+  #   image: vllm/vllm-openai:latest
+  #   profiles: ["gpu"]
+  #   ports:
+  #     - "${VLLM_PORT:-8000}:8000"
+  #   environment:
+  #     - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+  #     - TZ=${TZ:-UTC}
+  #   shm_size: "2g"
+  #   ipc: host
+  #   command: [
+  #     "--model", "${VLLM_MODEL_ID:-Qwen/Qwen2.5-7B-Instruct}",
+  #     "--dtype", "${VLLM_DTYPE:-float16}",
+  #     "--max-model-len", "${VLLM_MAXLEN:-8192}",
+  #     "--gpu-memory-utilization", "${VLLM_GPU_MEM_UTIL:-0.90}",
+  #     "--port", "8000"
+  #   ]
+  #   # Enable GPU if available (requires NVIDIA Container Toolkit)
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - capabilities: ["gpu"]
+  #   volumes:
+  #     - "${HOME}/ai-stack/mnt/hf_cache:/root/.cache/huggingface"
+  #   healthcheck:
+  #     test: ["CMD", "bash", "-lc", "curl -sf http://localhost:8000/health > /dev/null"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 20
+  #   restart: unless-stopped
+  #   networks:
+  #     - ai-network
 
   # Optional: Visual builder for LLM apps and RAG pipelines
-  langflow:
-    image: langflowai/langflow:latest
-    profiles: ["studio"]
-    ports:
-      - "${LANGFLOW_PORT:-7860}:7860"
-    environment:
-      - LANGFLOW_DATABASE_URL=sqlite:////root/.langflow/langflow.db
-      - LANGFLOW_AUTO_LOGIN=true
-      - TZ=${TZ:-UTC}
-    volumes:
-      - ./volumes/langflow:/root/.langflow
-    healthcheck:
-      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:7860/health > /dev/null"]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-    restart: unless-stopped
-    networks:
-      - ai-network
+  # langflow:
+  #   image: langflowai/langflow:latest
+  #   profiles: ["studio"]
+  #   ports:
+  #     - "${LANGFLOW_PORT:-7860}:7860"
+  #   environment:
+  #     - LANGFLOW_DATABASE_URL=sqlite:////root/.langflow/langflow.db
+  #     - LANGFLOW_AUTO_LOGIN=true
+  #     - TZ=${TZ:-UTC}
+  #   volumes:
+  #     - "${HOME}/ai-stack/mnt/langflow:/root/.langflow"
+  #   healthcheck:
+  #     test: ["CMD", "bash", "-lc", "curl -sf http://localhost:7860/health > /dev/null"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 20
+  #   restart: unless-stopped
+  #   networks:
+  #     - ai-network
 
 
 networks:
