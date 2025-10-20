@@ -1,54 +1,54 @@
 # AI Stack - Local AI Engineering Environment
 
-This repository provides a Docker Compose setup for running a modern local AI engineering environment. It focuses on the most in-demand skills: LLMs, RAG, vector databases, embeddings, experiment tracking, notebooks, and orchestration.
+This repository provides a Docker Compose setup for running a modern local AI engineering environment. It focuses on the most in-demand skills: LLMs, RAG, vector databases, embeddings, and experiment tracking.
 
 ## 📁 Contents
 
-- docker-compose.yml: Docker Compose configuration for AI services
-- .env.example: Default environment variables (ports, model IDs, tokens)
-- volumes/: Persistent data directories (ignored from git)
-- .github/: Project templates and guidelines (contributing, support, security)
-- README.md: This documentation file
+- `docker-compose.yml`: Docker Compose configuration for AI services
+- `.env.example`: Default environment variables (ports, model IDs, tokens)
+- `mnt/`: Persistent data directory structure for all services *see [readme](./mnt/README.md)
+- `README.md`: This documentation file
 
 ## ⚙️ Prerequisites
 
 - Docker 24+ and Docker Compose v2
-- Optional GPU: NVIDIA drivers + NVIDIA Container Toolkit (for vLLM and faster Ollama)
+- Optional GPU: NVIDIA drivers + NVIDIA Container Toolkit (for Ollama GPU acceleration)
 
 ## 🏗️ Architecture
 
 The stack provides the following services:
 
-- Open WebUI: Chat UI for local models (Ollama) or OpenAI-compatible servers (vLLM)
-- Ollama: Local LLM runtime (CPU/GPU) for rapid iteration
-- Qdrant: Vector database for RAG and semantic search
-- Text Embeddings Inference (Hugging Face): High-performance embeddings server (e.g., BGE/E5)
-- MLflow: Experiment tracking and artifact storage
-- Redis: Cache/broker for pipelines and apps
-- Jupyter: Notebooks for prototyping and data exploration
-- Prefect (optional): Workflow orchestration server
-- vLLM (optional, GPU): High-performance OpenAI-compatible LLM inference
-- LangFlow (optional): Visual builder for LLM apps and RAG pipelines
+- **Open WebUI**: Chat UI for local models (Ollama)
+- **Ollama**: Local LLM runtime (CPU/GPU) for rapid iteration
+- **Qdrant**: Vector database for RAG and semantic search
+- **Text Embeddings Inference (Hugging Face)**: High-performance embeddings server (e.g., E5/BGE)
+- **MLflow**: Experiment tracking and artifact storage
+- **Prefect**: Workflow orchestration server (optional, only runs with the 'orchestration' profile)
 
 ### Service Dependencies
 
-- Open WebUI depends on Ollama (for local models). It can also be configured to point at vLLM.
-- vLLM is optional and only needed if you want an OpenAI-compatible server with GPU performance.
+- Open WebUI depends on Ollama (for local models).
 - Other services are independent but commonly used together for RAG/experimentation.
 
-### Data Persistence
+### Data Persistence & Volume Mounts
 
-Persistent data is stored under `./volumes`:
+**Important:** All persistent data is stored under `${HOME}/ai-stack/mnt`.
+
+Example:
+
+```bash
+ls "${HOME}/ai-stack/mnt/qdrant"
+```
+
+Volume mapping is required for:
 
 - open-webui: Web UI data
 - ollama: Downloaded models
 - qdrant: Vector database storage
 - mlflow: Experiments and artifacts
-- redis: Cache data
-- jupyter: Notebook settings
-- hf_cache: Hugging Face cache for embeddings and vLLM
+- hf_cache: Hugging Face cache for embeddings
 
-All containers run within a dedicated `ai` Docker bridge network for inter-service communication.
+All containers run within a dedicated `ai-network` Docker bridge network for inter-service communication.
 
 ## 🚀 Setup & Usage
 
@@ -78,8 +78,9 @@ All containers run within a dedicated `ai` Docker bridge network for inter-servi
 4. **Check all services status:**
     ```bash
     docker compose ps
+    ```
 
-5. Load a local model in Ollama (first run downloads)
+5. **Load a local model in Ollama (first run downloads):**
 
    ```bash
    docker compose exec ollama ollama pull llama3.1:8b
@@ -90,53 +91,59 @@ All containers run within a dedicated `ai` Docker bridge network for inter-servi
 
 - Modify `docker-compose.yml` to adjust service settings, ports, or profiles
 - Update `.env` for ports, model IDs, tokens (e.g., `HF_TOKEN`)
-- Mount extra local project folders into the Jupyter container if needed
+
 
 ## 📊 Service Endpoints & Ports
 
 ### Open WebUI
-- UI: http://localhost:3000
-- Notes: Can talk to Ollama and vLLM. Configure OpenAI base URL in settings when using vLLM.
+Modern chat UI for interacting with local LLMs (Ollama) and managing conversations. Supports model switching and prompt history. Currently configured in the compose file to talk to Ollama.
+
+**Docs:** [Open WebUI GitHub](https://github.com/open-webui/open-webui)  
+**UI:** [http://localhost:3000](http://localhost:3000)
+
+---
 
 ### Ollama (Local LLMs)
-- API: http://localhost:11434
-- Test: `curl -sSf http://localhost:11434/api/tags | jq .`
+Local LLM runtime for running, managing, and serving open-source models. Supports both CPU and GPU. 
+
+**Docs** [Ollama Docs](https://ollama.com)  
+**API:** [http://localhost:11434](http://localhost:11434)
+
+---
 
 ### Qdrant (Vector DB)
-- REST API: http://localhost:6333
-- gRPC: localhost:6334
-- Health: `curl -sSf http://localhost:6333/readyz`
+High-performance vector database for semantic search, RAG, and similarity queries. Stores embeddings and metadata.
+
+**Docs:** [Qdrant Docs](https://qdrant.tech/documentation)  
+**REST API:** [http://localhost:6333](http://localhost:6333)  
+**gRPC:** [http://localhost:6334](http://localhost:6334)
+
+---
 
 ### Embeddings (Text Embeddings Inference)
-- API: http://localhost:8080
-- Health: `curl -sSf http://localhost:8080/health`
-- Model: configured via `TEI_MODEL_ID` in `.env` (defaults to `BAAI/bge-small-en-v1.5`)
+Fast, production-grade embeddings server for generating vector representations from text using Hugging Face models.
+
+**Docs:** [Hugging Face TEI](https://github.com/huggingface/text-embeddings-inference)  
+**API:** [http://localhost:8989](http://localhost:8989)  
+**Model:** Configured via `TEI_MODEL_ID` in `.env` (defaults to `intfloat/e5-base-v2`)
+
+---
 
 ### MLflow
-- UI: http://localhost:5000
-- Health: `curl -sSf http://localhost:5000/`
+Experiment tracking, model registry, and artifact storage for ML workflows. Enables reproducibility and collaboration.  
 
-### Redis
-- TCP: localhost:6380 (mapped to container 6379)
-- Test (from host with redis-cli installed): `redis-cli -p 6380 ping`
+**Docs:** [MLflow](https://mlflow.org)  
+**UI:** [http://localhost:5000](http://localhost:5000)
 
-### Jupyter
-- UI: http://localhost:8888
-- Token: `JUPYTER_TOKEN` from `.env` (defaults to `ai-stack`)
+---
 
-### Prefect (optional)
-- UI: http://localhost:4200
-- Start: `docker compose --profile orchestration up -d prefect`
+### Prefect
+Workflow orchestration and automation for data and ML pipelines. Only runs if you use the 'orchestration' profile.  
 
-### vLLM (optional, GPU)
-- OpenAI-compatible API: http://localhost:8000
-- Health: `curl -sSf http://localhost:8000/health`
-- Configure model via `.env` (e.g., `VLLM_MODEL_ID=Qwen/Qwen2.5-7B-Instruct`)
+**Docs:** [Prefect](https://docs.prefect.io)  
+**UI:** [http://localhost:4200](http://localhost:4200)
 
-### LangFlow (optional)
-- UI: http://localhost:7860
-- Start: `docker compose --profile studio up -d langflow`
-- Notes: Persisted under `volumes/langflow`; can connect to Ollama (http://ollama:11434), vLLM (http://vllm:8000), Qdrant (http://qdrant:6333), and TEI (http://embeddings:80)
+---
 
 ## 🐞 Troubleshooting
 
@@ -144,40 +151,26 @@ All containers run within a dedicated `ai` Docker bridge network for inter-servi
   ```bash
   docker compose logs -f SERVICE
   ```
-- Ensure no port conflicts (Redis defaults to 6380 to avoid common 6379 usage)
 - For slow model downloads or gated models, set `HF_TOKEN` in `.env`
-- For GPU with vLLM/Ollama, ensure NVIDIA drivers + NVIDIA Container Toolkit are installed
+- For GPU with Ollama, ensure NVIDIA drivers + NVIDIA Container Toolkit are installed
 - Reset stack state:
   ```bash
   docker compose down -v
-  rm -rf volumes/*
+  rm -rf mnt/*
   ```
 
 ## ⚙️ Configuration Insights
 
 ### Volume Mount Best Practices
-- Data and caches are mounted under `./volumes` to persist between runs
-- Remove a specific subfolder in `volumes/` to reset just one service
+- Data and caches are mounted under `${HOME}/ai-stack/mnt` to persist between runs
+- Remove a specific subfolder in `mnt/` to reset just one service
 
 ### Startup Dependencies
-- Open WebUI waits for Ollama; configure vLLM in WebUI if using the GPU profile
-- Health checks are defined for core services (Ollama, Qdrant, TEI, MLflow, vLLM)
+- Open WebUI waits for Ollama and Open WebUI can be veery slow to start the first time.  *Just wait for it...*
+- Health checks are defined for core services (Ollama, Qdrant, TEI, MLflow)
 
 ### Port Configuration
-- Most endpoints use standard ports; Redis maps host 6380 -> container 6379 to avoid local conflicts
-- Override any port in `.env`
-
-## 📚 Additional Resources
-
-- Open WebUI: https://github.com/open-webui/open-webui
-- Ollama: https://ollama.com
-- Qdrant: https://qdrant.tech/documentation
-- Hugging Face TEI: https://github.com/huggingface/text-embeddings-inference
-- MLflow: https://mlflow.org
-- Redis: https://redis.io
-- Jupyter: https://jupyter.org
-- Prefect: https://docs.prefect.io
-- vLLM: https://docs.vllm.ai
+- Most endpoints use standard ports; override any port in `.env`
 
 ## 🌐 Community & Support
 
