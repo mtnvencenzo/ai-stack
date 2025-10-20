@@ -78,7 +78,7 @@ Have an idea for improving AI Stack?
 ### 🧠 Before Requesting
 
 1. **Check existing issues** for similar requests
-2. **Consider the scope** - does it fit the project's goals (Azure service emulators)?
+2. **Consider the scope** - does it fit the project's goals (local AI engineering with LLMs, RAG, notebooks, and experiment tracking)? 
 3. **Think about implementation** - how would it work with Docker Compose?
 
 ### 📨 How to Request
@@ -151,6 +151,6 @@ Thank you for your interest in AI Stack! Whether you're reporting bugs, suggesti
 
 ---
 
-**Happy AI development! 🤖**
+Happy AI development! 🤖
 
 *Last updated: October 2025*

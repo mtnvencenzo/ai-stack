@@ -204,6 +204,6 @@ By contributing to this project, you agree that your contributions will be licen
 
 ---
 
-**Happy Contributing! 🍸**
+Happy Contributing!  
 
 For any questions about this contributing guide, please open an issue or contact the maintainers.

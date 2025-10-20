@@ -79,4 +79,4 @@ Our security measures include:
 
 ---
 
-**Thank you for helping keep AI Stack and our users safe! 🤖**
+Thank you for helping keep AI Stack and our users safe! 🤖

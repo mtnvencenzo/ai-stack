@@ -19,6 +19,11 @@ services:
       - TZ=${TZ:-UTC}
     volumes:
       - "${HOME}/ai-stack/mnt/open-webui:/app/backend/data"
+    healthcheck:  
+          test: ["CMD", "bash", "-lc", "curl -sf http://localhost:8080 > /dev/null"]  
+          interval: 15s  
+          timeout: 5s  
+          retries: 50  
     restart: unless-stopped
     networks:
       - ai-network
@@ -71,7 +76,7 @@ services:
     # NOTE: If using GPU, run under the `gpu` profile and ensure NVIDIA drivers/toolkit are installed.
     command: ["--model-id", "${TEI_MODEL_ID:-intfloat/e5-base-v2}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
     environment:
-      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-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}
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
       - HF_HOME=/root/.cache/huggingface
       - CUDA_VISIBLE_DEVICES=
     ports:
