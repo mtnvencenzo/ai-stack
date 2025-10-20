@@ -2,6 +2,8 @@
 
 This repository provides a Docker Compose setup for running a modern local AI engineering environment. It focuses on the most in-demand skills: LLMs, RAG, vector databases, embeddings, and experiment tracking.
 
+![AI Stack](./assets/ai-stack.drawio.svg)
+
 ## 📁 Contents
 
 - `docker-compose.yml`: Docker Compose configuration for AI services
@@ -24,6 +26,7 @@ The stack provides the following services:
 - **Text Embeddings Inference (Hugging Face)**: High-performance embeddings server (e.g., E5/BGE)
 - **MLflow**: Experiment tracking and artifact storage
 - **Prefect**: Workflow orchestration server (optional, only runs with the 'orchestration' profile)
+
 
 ### Service Dependencies
 
