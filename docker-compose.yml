@@ -1,0 +1,135 @@
+name: ai-stack
+
+services:
+  # UI for chatting with local models (Ollama) or OpenAI-compatible endpoints (vLLM)
+  open-webui:
+    container_name: open-webui
+    image: ghcr.io/open-webui/open-webui:latest
+    depends_on:
+      - ollama
+    ports:
+      - "${OPENWEBUI_PORT:-3000}:8080"
+    environment:
+      # Point WebUI to Ollama (local models)
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # Optionally, if running vLLM profile, expose OpenAI-compatible endpoint
+      # OPENAI_API_BASE_URL=http://vllm:8000
+      # ENABLE_OPENAI_API=true
+      - WEBUI_NAME=AI Stack WebUI
+      - TZ=${TZ:-UTC}
+    volumes:
+      - "${HOME}/ai-stack/mnt/open-webui:/app/backend/data"
+    healthcheck:  
+          test: ["CMD", "bash", "-lc", "curl -sf http://localhost:8080 > /dev/null"]  
+          interval: 15s  
+          timeout: 5s  
+          retries: 50  
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Local LLM runtime (CPU by default; uses GPU automatically if NVIDIA runtime is available)
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      # Uncomment if you have NVIDIA Container Toolkit installed and want to force GPU visibility
+      # - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - "${HOME}/ai-stack/mnt/ollama:/root/.ollama"
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:11434/api/tags > /dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Vector database for RAG workloads
+  qdrant:
+    container_name: qdrant
+    image: qdrant/qdrant:latest
+    ports:
+      - "${QDRANT_HTTP_PORT:-6333}:6333"
+      - "${QDRANT_GRPC_PORT:-6334}:6334"
+    environment:
+      - QDRANT__LOG_LEVEL=INFO
+    volumes:
+      - "${HOME}/ai-stack/mnt/qdrant:/qdrant/storage"
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:6333/readyz > /dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Embeddings server (supports popular models like BGE/E5; set HF token to speed up/enable private models)
+  embeddings:
+    container_name: tei
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
+    # NOTE: If using GPU, run under the `gpu` profile and ensure NVIDIA drivers/toolkit are installed.
+    command: ["--model-id", "${TEI_MODEL_ID:-intfloat/e5-base-v2}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+      - HF_HOME=/root/.cache/huggingface
+      - CUDA_VISIBLE_DEVICES=
+    ports:
+      - "${TEI_PORT:-8989}:80"
+    volumes:
+      - "${HOME}/ai-stack/mnt/hf_cache:/root/.cache/huggingface"
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Experiment tracking server (file-based backend + artifacts for local dev)
+  mlflow:
+    container_name: mlflow
+    build:
+      context: ./containers/mlflow
+      dockerfile: Dockerfile
+    ports:
+      - "${MLFLOW_PORT:-5000}:5000"
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:////mlflow/mlruns.db
+      - MLFLOW_ARTIFACT_ROOT=/mlflow/artifacts
+      - MLFLOW_HOST=0.0.0.0
+      - MLFLOW_PORT=5000
+    volumes:
+      - "${HOME}/ai-stack/mnt/mlflow:/mlflow"
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:5000/ > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Optional: modern orchestration for flows (disabled by default)
+  prefect:
+    container_name: prefect
+    image: prefecthq/prefect:2-latest
+    profiles: ["orchestration"]
+    ports:
+      - "${PREFECT_PORT:-4200}:4200"
+    environment:
+      - PREFECT_API_URL=http://prefect:4200/api
+    command: ["prefect", "server", "start", "--host", "0.0.0.0"]
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge

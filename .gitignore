@@ -1,69 +1,13 @@
+# Docker-related ignores
 *.swp
-*.*~
-project.lock.json
+*.bak
+*.tmp
 .DS_Store
-*.pyc
-nupkg/
-*.nupkg
 
-# Visual Studio Code
+# Ignore everything in volumes directory except .gitkeep files
+volumes/*
+!volumes/*/
+volumes/*/*
+!volumes/*/.gitkeep
 
-# Rider
-.idea
-
-# User-specific files
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
-[Oo]ut/
-msbuild.log
-msbuild.err
-msbuild.wrn
-
-# Visual Studio 2015
-.vs/
-
-# Coverage Test Result Files
-*.coverage
-
-# npm
-node_modules/
-/**/npm-cache/
-
-*/packages/*
-
-# Shell window envs
-**/env-config.js
-
-#Cypress
-**/cypress/screenshots/*
-**/cypress/videos/*
-**/cypress/logs/*
-**/cypress/logs/*
-**/results/test-result-*
-
-# Build
-/**/dist/**/*
-
-#/**/*/.terraform
-/**/*/.terraform.lock.hcl
-
-/**/.coverage
-/**/TestResults/
-/**/TemplateEngineHost/
-
-#Dapr
-/**/.dapr/logs/
+.env-local
