@@ -22,15 +22,13 @@ Before you begin, ensure you have the following installed:
 ### 🗂️ Project Structure
 
 ```text
-├── docker-compose.yml        # AI engineering services (Ollama, Open WebUI, Qdrant, TEI, MLflow, Redis, Jupyter, etc.)
+├── docker-compose.yml        # AI engineering services (Ollama, Open WebUI, Qdrant, TEI, MLflow, Prefect, etc.)
 ├── .env.example              # Default environment variables
-├── volumes/                  # Persistent data directories (git-ignored)
+├── mnt/                      # Persistent data directories (git-ignored)
 │   ├── open-webui/
 │   ├── ollama/
 │   ├── qdrant/
 │   ├── mlflow/
-│   ├── redis/
-│   ├── jupyter/
 │   └── hf_cache/
 └── .github/                  # GitHub workflows and templates
 ```
@@ -156,10 +154,9 @@ docker compose up -d
 # Check service health
 docker compose ps
 
-# Quick smoke tests (optional)
 curl -sSf http://localhost:3000 >/dev/null   # Open WebUI
 curl -sSf http://localhost:6333/readyz >/dev/null   # Qdrant
-curl -sSf http://localhost:8080/health >/dev/null   # TEI
+curl -sSf http://localhost:8989/health >/dev/null   # TEI
 curl -sSf http://localhost:5000 >/dev/null          # MLflow
 
 # Clean up
