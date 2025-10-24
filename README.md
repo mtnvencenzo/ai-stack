@@ -35,12 +35,12 @@ The stack provides the following services:
 
 ### Data Persistence & Volume Mounts
 
-**Important:** All persistent data is stored under `${HOME}/ai-stack/mnt`.
+**Important:** All persistent data is stored under `${HOME}/mnt/ai-stack`.
 
 Example:
 
 ```bash
-ls "${HOME}/ai-stack/mnt/qdrant"
+ls "${HOME}/mnt/ai-stack/qdrant"
 ```
 
 Volume mapping is required for:
@@ -159,14 +159,14 @@ Workflow orchestration and automation for data and ML pipelines. Only runs if yo
 - Reset stack state:
   ```bash
   docker compose down -v
-  rm -rf mnt/*
+  rm -rf "${HOME}/mnt/ai-stack/*"
   ```
 
 ## ⚙️ Configuration Insights
 
 ### Volume Mount Best Practices
-- Data and caches are mounted under `${HOME}/ai-stack/mnt` to persist between runs
-- Remove a specific subfolder in `mnt/` to reset just one service
+- Data and caches are mounted under `${HOME}/mnt/ai-stack` to persist between runs
+- Remove a specific subfolder in `mnt/ai-stack` to reset just one service
 
 ### Startup Dependencies
 - Open WebUI waits for Ollama and Open WebUI can be veery slow to start the first time.  *Just wait for it...*
