@@ -8,7 +8,6 @@ This repository provides a Docker Compose setup for running a modern local AI en
 
 - `docker-compose.yml`: Docker Compose configuration for AI services
 - `.env.example`: Default environment variables (ports, model IDs, tokens)
-- `mnt/`: Persistent data directory structure for all services *see [readme](./mnt/README.md)
 - `README.md`: This documentation file
 
 ## ⚙️ Prerequisites
@@ -32,26 +31,6 @@ The stack provides the following services:
 
 - Open WebUI depends on Ollama (for local models).
 - Other services are independent but commonly used together for RAG/experimentation.
-
-### Data Persistence & Volume Mounts
-
-**Important:** All persistent data is stored under `${HOME}/mnt/ai-stack`.
-
-Example:
-
-```bash
-ls "${HOME}/mnt/ai-stack/qdrant"
-```
-
-Volume mapping is required for:
-
-- open-webui: Web UI data
-- ollama: Downloaded models
-- qdrant: Vector database storage
-- mlflow: Experiments and artifacts
-- hf_cache: Hugging Face cache for embeddings
-
-All containers run within a dedicated `ai-network` Docker bridge network for inter-service communication.
 
 ## 🚀 Setup & Usage
 
@@ -148,25 +127,7 @@ Workflow orchestration and automation for data and ML pipelines. Only runs if yo
 
 ---
 
-## 🐞 Troubleshooting
-
-- Check container logs:
-  ```bash
-  docker compose logs -f SERVICE
-  ```
-- For slow model downloads or gated models, set `HF_TOKEN` in `.env`
-- For GPU with Ollama, ensure NVIDIA drivers + NVIDIA Container Toolkit are installed
-- Reset stack state:
-  ```bash
-  docker compose down -v
-  rm -rf "${HOME}/mnt/ai-stack/*"
-  ```
-
 ## ⚙️ Configuration Insights
-
-### Volume Mount Best Practices
-- Data and caches are mounted under `${HOME}/mnt/ai-stack` to persist between runs
-- Remove a specific subfolder in `mnt/ai-stack` to reset just one service
 
 ### Startup Dependencies
 - Open WebUI waits for Ollama and Open WebUI can be veery slow to start the first time.  *Just wait for it...*

@@ -18,7 +18,7 @@ services:
       - WEBUI_NAME=AI Stack WebUI
       - TZ=${TZ:-UTC}
     volumes:
-      - "${HOME}/mnt/ai-stack/open-webui:/app/backend/data"
+      - open-webui:/app/backend/data
     healthcheck:  
           test: ["CMD", "bash", "-lc", "curl -sf http://localhost:8080 > /dev/null"]  
           interval: 15s  
@@ -39,7 +39,7 @@ services:
       # Uncomment if you have NVIDIA Container Toolkit installed and want to force GPU visibility
       # - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - "${HOME}/mnt/ai-stack/ollama:/root/.ollama"
+      - ollama:/root/.ollama
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost:11434/api/tags > /dev/null"]
       interval: 10s
@@ -59,7 +59,7 @@ services:
     environment:
       - QDRANT__LOG_LEVEL=INFO
     volumes:
-      - "${HOME}/mnt/ai-stack/qdrant:/qdrant/storage"
+      - qdrant:/qdrant/storage
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost:6333/readyz > /dev/null"]
       interval: 10s
@@ -82,7 +82,7 @@ services:
     ports:
       - "${TEI_PORT:-8989}:80"
     volumes:
-      - "${HOME}/mnt/ai-stack/hf_cache:/root/.cache/huggingface"
+      - hf_cache:/root/.cache/huggingface
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost/health > /dev/null"]
       interval: 10s
@@ -106,7 +106,7 @@ services:
       - MLFLOW_HOST=0.0.0.0
       - MLFLOW_PORT=5000
     volumes:
-      - "${HOME}/mnt/ai-stack/mlflow:/mlflow"
+      - mlflow:/mlflow
     healthcheck:
       test: ["CMD", "bash", "-lc", "curl -sf http://localhost:5000/ > /dev/null"]
       interval: 10s
@@ -133,3 +133,10 @@ services:
 networks:
   ai-network:
     driver: bridge
+
+volumes:
+  open-webui:
+  ollama:
+  qdrant:
+  hf_cache:
+  mlflow:
