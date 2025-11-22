@@ -55,7 +55,7 @@ We believe in acknowledging security researchers who help improve our security:
 
 ### For Developers
 
-- 🛡️ **Container Security**: Prefer official or well-maintained images (Ollama, Open WebUI, Qdrant, Hugging Face TEI, MLflow, Prefect, vLLM)
+- 🛡️ **Container Security**: Prefer official or well-maintained images (Ollama, Open WebUI, Qdrant, Hugging Face TEI)
 - 🔒 **Network Isolation**: Configure proper network segmentation; expose only necessary ports
 - 🔑 **Secrets Management**: Keep tokens like `HF_TOKEN` out of git; use `.env` files or secret managers
 - 📊 **Monitoring**: Monitor container logs for unusual activity

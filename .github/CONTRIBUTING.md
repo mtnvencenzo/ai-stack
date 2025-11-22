@@ -22,13 +22,12 @@ Before you begin, ensure you have the following installed:
 ### 🗂️ Project Structure
 
 ```text
-├── docker-compose.yml        # AI engineering services (Ollama, Open WebUI, Qdrant, TEI, MLflow, Prefect, etc.)
+├── docker-compose.yml        # AI engineering services (Ollama, Open WebUI, Qdrant, TEI, etc.)
 ├── .env.example              # Default environment variables
 ├── mnt/                      # Persistent data directories (git-ignored)
 │   ├── open-webui/
 │   ├── ollama/
 │   ├── qdrant/
-│   ├── mlflow/
 │   └── hf_cache/
 └── .github/                  # GitHub workflows and templates
 ```
@@ -64,8 +63,6 @@ Before you begin, ensure you have the following installed:
    # Embeddings server health (TEI)
    curl -sSf http://localhost:8080/health >/dev/null && echo "TEI OK"
 
-   # MLflow UI
-   curl -sSf http://localhost:5000 >/dev/null && echo "MLflow OK"
    ```
 
 ## 🔄 Contributing Process
@@ -124,7 +121,7 @@ Before you begin, ensure you have the following installed:
 
 ### 🐳 Docker & Docker Compose
 
-- Prefer official or well-maintained images (Ollama, Open WebUI, Qdrant, HuggingFace TEI, MLflow, Redis, Jupyter, Prefect, vLLM)
+- Prefer official or well-maintained images (Ollama, Open WebUI, Qdrant, HuggingFace TEI)
 - Follow Docker best practices for service configuration
 - Use meaningful container and service names
 - Include proper health checks where available
@@ -137,27 +134,6 @@ Before you begin, ensure you have the following installed:
 - Include code examples for setup instructions
 - Update service endpoint information when ports change
 
-### 🗂️ File Organization
-
-- Keep service documentation in the main `README.md` or a future `docs/` folder
-- Use consistent naming conventions
-- Update `docker-compose.yml` with clear comments
-
-### 🔍 Validation Steps
-
-Before submitting changes:
-
-```bash
-# Verify services start correctly
-docker compose up -d
-
-# Check service health
-docker compose ps
-
-curl -sSf http://localhost:3000 >/dev/null   # Open WebUI
-curl -sSf http://localhost:6333/readyz >/dev/null   # Qdrant
-curl -sSf http://localhost:8989/health >/dev/null   # TEI
-curl -sSf http://localhost:5000 >/dev/null          # MLflow
 
 # Clean up
 docker compose down -v
