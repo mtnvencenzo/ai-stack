@@ -38,29 +38,29 @@ The stack provides the following services:
 
    ```bash
    # Build up compose
-   docker compose -p ai-stack -f docker-compose.yml up -d
+   docker compose -f docker-compose.yml up -d
 
    # Or if the containers have already been created
-   docker compose -p ai-stack -f docker-compose.yml start
+   docker compose -f docker-compose.yml start
 
    # Optional langfuse observability 
-   docker compose -p langfuse-stack -f docker-compose-langfuse.yml up -d
-   docker compose -p langfuse-stack -f docker-compose-langfuse.yml start
+   docker compose -f docker-compose-langfuse.yml up -d
+   docker compose -f docker-compose-langfuse.yml start
 
    ```
 
 2. **Stop the services:**
     ```bash
     # Tear down and remove the volumes
-    docker compose -p ai-stack -f docker-compose.yml down -v
+    docker compose -f docker-compose.yml down -v
 
     # Optional langfuse observability 
-    docker compose -p langfuse-stack -f docker-compose-langfuse.yml down -v
+    docker compose -f docker-compose-langfuse.yml down -v
     ```
 
 3. **Rebuild and restart a specific service:**
     ```bash
-    docker compose -p ai-stack -f docker-compose.yml up -d --force-recreate --no-deps --build <service_name>
+    docker compose -f docker-compose.yml up -d --force-recreate --no-deps --build <service_name>
 
     # Optional langfuse observability 
     docker compose -p langfuse-stack -f docker-compose-langfuse.yml up -d --force-recreate --no-deps --build <service_name>
@@ -74,8 +74,8 @@ The stack provides the following services:
 5. **Load a local model in Ollama (first run downloads):**
 
    ```bash
-   docker compose exec ollama ollama pull llama3.1:8b
-   docker compose exec ollama ollama run llama3.1:8b "Hello"
+   docker compose exec ollama ollama pull qwen3:8b
+   docker compose exec ollama ollama run qwen3:8b "Hello"
    ```
 
 ## 🛠️ Customization
@@ -99,6 +99,7 @@ Local LLM runtime for running, managing, and serving open-source models. Support
 
 **Docs** [Ollama Docs](https://ollama.com)  
 **API:** [http://localhost:11434](http://localhost:11434)
+**GPU Support:** [Setup with docker](https://github.com/mtnvencenzo/bash/blob/main/docker/gpu.sh)
 
 ---
 

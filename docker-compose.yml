@@ -37,15 +37,26 @@ services:
     environment:
       - OLLAMA_HOST=0.0.0.0
       # Uncomment if you have NVIDIA Container Toolkit installed and want to force GPU visibility
-      # - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - ollama:/root/.ollama
+
     healthcheck:
-      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:11434/api/tags > /dev/null"]
+      test: ["CMD", "bash", "-lc", "ollama --version && ollama ps || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 10
+
     restart: unless-stopped
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
     networks:
       - ai-network
 
@@ -58,14 +69,11 @@ services:
       - "${QDRANT_GRPC_PORT:-6334}:6334"
     environment:
       - QDRANT__LOG_LEVEL=INFO
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY:-6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3}
     volumes:
       - qdrant:/qdrant/storage
-    healthcheck:
-      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:6333/readyz > /dev/null"]
-      interval: 10s
-      timeout: 3s
-      retries: 10
     restart: unless-stopped
+
     networks:
       - ai-network
 
