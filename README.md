@@ -63,7 +63,7 @@ The stack provides the following services:
     docker compose -f docker-compose.yml up -d --force-recreate --no-deps --build <service_name>
 
     # Optional langfuse observability 
-    docker compose -p langfuse-stack -f docker-compose-langfuse.yml up -d --force-recreate --no-deps --build <service_name>
+    docker compose -f docker-compose-langfuse.yml up -d --force-recreate --no-deps --build <service_name>
     ```
 
 4. **Check all services status:**
