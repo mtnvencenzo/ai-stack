@@ -67,7 +67,7 @@ services:
       EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-}
       SMTP_CONNECTION_URL: ${SMTP_CONNECTION_URL:-}
     networks:
-      - langfuse-network
+      - app-internal-network
 
   langfuse-web:
     image: docker.io/langfuse/langfuse:3
@@ -89,7 +89,7 @@ services:
       LANGFUSE_INIT_USER_NAME: ${LANGFUSE_INIT_USER_NAME:-}
       LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:-}
     networks:
-      - langfuse-network
+      - app-internal-network
       
   clickhouse:
     image: docker.io/clickhouse/clickhouse-server
@@ -113,7 +113,7 @@ services:
       retries: 30
       start_period: 1s
     networks:
-      - langfuse-network
+      - app-internal-network
       
   minio:
     image: docker.io/minio/minio
@@ -137,7 +137,7 @@ services:
       retries: 30
       start_period: 1s
     networks:
-      - langfuse-network
+      - app-internal-network
       
   redis:
     image: docker.io/redis:7
@@ -154,7 +154,7 @@ services:
       timeout: 10s
       retries: 30
     networks:
-      - langfuse-network
+      - app-internal-network
       
   postgres:
     image: docker.io/postgres:${POSTGRES_VERSION:-17}
@@ -176,11 +176,12 @@ services:
     volumes:
       - langfuse_postgres_data:/var/lib/postgresql/data
     networks:
-      - langfuse-network
+      - app-internal-network
 
 networks:
-  langfuse-network:
-    driver: bridge
+  app-internal-network:
+    external: true
+    name: app-internal-network
 
 volumes:
   langfuse_postgres_data:

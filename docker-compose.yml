@@ -3,7 +3,6 @@ name: ai-stack
 services:
   # UI for chatting with local models (Ollama) or OpenAI-compatible endpoints (vLLM)
   open-webui:
-    hostname: open-webui.docker.local
     container_name: open-webui
     image: ghcr.io/open-webui/open-webui:latest
     depends_on:
@@ -12,7 +11,7 @@ services:
       - "${OPENWEBUI_PORT:-3000}:8080"
     environment:
       # Point WebUI to Ollama (local models)
-      - OLLAMA_BASE_URL=http://ollama.docker.local:11434
+      - OLLAMA_BASE_URL=http://ollama:11434
       # Optionally, if running vLLM profile, expose OpenAI-compatible endpoint
       # OPENAI_API_BASE_URL=http://vllm:8000
       # ENABLE_OPENAI_API=true
@@ -27,13 +26,10 @@ services:
           retries: 50  
     restart: unless-stopped
     networks:
-      ai-network:
-        aliases:
-          - open-webui.docker.local
+      app-internal-network:
 
   # Local LLM runtime (CPU by default; uses GPU automatically if NVIDIA runtime is available)
   ollama:
-    hostname: ollama.docker.local
     container_name: ollama
     image: ollama/ollama:latest
     ports:
@@ -62,13 +58,11 @@ services:
               capabilities: [gpu]
 
     networks:
-      ai-network:
-        aliases:
-          - ollama.docker.local
+      app-internal-network:
 
   # Vector database for RAG workloads
   qdrant:
-    hostname: qdrant.docker.local
+    hostname: qdrant
     container_name: qdrant
     image: qdrant/qdrant:latest
     ports:
@@ -82,13 +76,10 @@ services:
     restart: unless-stopped
 
     networks:
-      ai-network:
-        aliases:
-          - qdrant.docker.local
+      app-internal-network:
 
   # Embeddings server (supports popular models like BGE/E5; set HF token to speed up/enable private models)
-  embeddings:
-    hostname: tei.docker.local
+  tei:
     container_name: tei
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
     # NOTE: If using GPU, run under the `gpu` profile and ensure NVIDIA drivers/toolkit are installed.
@@ -108,14 +99,12 @@ services:
       retries: 20
     restart: unless-stopped
     networks:
-      ai-network:
-        aliases:
-          - tei.docker.local
-
+      app-internal-network:
 
 networks:
-  ai-network:
-    driver: bridge
+  app-internal-network:
+    external: true
+    name: app-internal-network
 
 volumes:
   open-webui:
