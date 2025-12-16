@@ -89,6 +89,7 @@ services:
       - HF_HOME=/root/.cache/huggingface
       - CUDA_VISIBLE_DEVICES=all
       - NVIDIA_VISIBLE_DEVICES=all
+      - API_KEY=${TEI_API_KEY:-6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3}
     ports:
       - "${TEI_PORT:-8989}:80"
     volumes:
