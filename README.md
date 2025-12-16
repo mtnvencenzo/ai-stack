@@ -22,7 +22,7 @@ The stack provides the following services:
 - **Open WebUI**: Chat UI for local models (Ollama)
 - **Ollama**: Local LLM runtime (CPU/GPU) for rapid iteration
 - **Qdrant**: Vector database for RAG and semantic search
-- **Text Embeddings Inference (Hugging Face)**: High-performance embeddings server (e.g., intfloat/e5-base-v2)
+- **Text Embeddings Inference (Hugging Face)**: High-performance embeddings server (e.g., sentence-transformers/all-mpnet-base-v2)
 - **Langfuse**: Separate docker compose setup for running Langfuse locally
 
 ### Service Dependencies
@@ -117,7 +117,7 @@ Fast, production-grade embeddings server for generating vector representations f
 
 **Docs:** [Hugging Face TEI](https://github.com/huggingface/text-embeddings-inference)  
 **API:** [http://localhost:8989](http://localhost:8989)  
-**Model:** Configured via `TEI_MODEL_ID` in `.env` (defaults to `intfloat/e5-base-v2`)
+**Model:** Configured via `TEI_MODEL_ID` in `.env` (defaults to `sentence-transformers/all-mpnet-base-v2`)
 
 ---
 

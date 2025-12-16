@@ -36,7 +36,7 @@ services:
       - "${OLLAMA_PORT:-11434}:11434"
     environment:
       - OLLAMA_HOST=0.0.0.0
-      # Uncomment if you have NVIDIA Container Toolkit installed and want to force GPU visibility
+      - CUDA_VISIBLE_DEVICES=all
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - ollama:/root/.ollama
@@ -81,13 +81,14 @@ services:
   # Embeddings server (supports popular models like BGE/E5; set HF token to speed up/enable private models)
   tei:
     container_name: tei
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
+    image: ghcr.io/huggingface/text-embeddings-inference:1.8
     # NOTE: If using GPU, run under the `gpu` profile and ensure NVIDIA drivers/toolkit are installed.
-    command: ["--model-id", "${TEI_MODEL_ID:-intfloat/e5-base-v2}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
+    command: ["--model-id", "${TEI_MODEL_ID:-sentence-transformers/all-mpnet-base-v2}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
       - HF_HOME=/root/.cache/huggingface
-      - CUDA_VISIBLE_DEVICES=
+      - CUDA_VISIBLE_DEVICES=all
+      - NVIDIA_VISIBLE_DEVICES=all
     ports:
       - "${TEI_PORT:-8989}:80"
     volumes:
@@ -100,6 +101,14 @@ services:
     restart: unless-stopped
     networks:
       app-internal-network:
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
 networks:
   app-internal-network:
