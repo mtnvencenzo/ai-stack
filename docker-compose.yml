@@ -70,7 +70,7 @@ services:
       - "${QDRANT_GRPC_PORT:-6334}:6334"
     environment:
       - QDRANT__LOG_LEVEL=INFO
-      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY:-6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3}
+      #- QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
     volumes:
       - qdrant:/qdrant/storage
     restart: unless-stopped
