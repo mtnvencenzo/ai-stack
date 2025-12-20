@@ -83,7 +83,7 @@ services:
     container_name: tei
     image: ghcr.io/huggingface/text-embeddings-inference:1.8
     # NOTE: If using GPU, run under the `gpu` profile and ensure NVIDIA drivers/toolkit are installed.
-    command: ["--model-id", "${TEI_MODEL_ID:-sentence-transformers/all-mpnet-base-v2}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}"]
+    command: ["--model-id", "${TEI_MODEL_ID:-sentence-transformers/all-mpnet-base-v2}", "--max-client-batch-size", "${TEI_MAX_CLIENT_BATCH:-128}", "--port", "${TEI_PORT:-8989}"]
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
       - HF_HOME=/root/.cache/huggingface
@@ -91,11 +91,11 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - API_KEY=${TEI_API_KEY:-6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3}
     ports:
-      - "${TEI_PORT:-8989}:80"
+      - "${TEI_PORT:-8989}:${TEI_PORT:-8989}"
     volumes:
       - hf_cache:/root/.cache/huggingface
     healthcheck:
-      test: ["CMD", "bash", "-lc", "curl -sf http://localhost/health > /dev/null"]
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:${TEI_PORT:-8989}/health > /dev/null"]
       interval: 10s
       timeout: 5s
       retries: 20
