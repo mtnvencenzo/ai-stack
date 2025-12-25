@@ -36,8 +36,7 @@ services:
       - "${OLLAMA_PORT:-11434}:11434"
     environment:
       - OLLAMA_HOST=0.0.0.0
-      - CUDA_VISIBLE_DEVICES=all
-      - NVIDIA_VISIBLE_DEVICES=all
+      - OLLAMA_NUM_GPU=20
     volumes:
       - ollama:/root/.ollama
 
@@ -48,6 +47,7 @@ services:
       retries: 10
 
     restart: unless-stopped
+    # runtime: nvidia
 
     deploy:
       resources:
