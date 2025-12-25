@@ -47,15 +47,15 @@ services:
       retries: 10
 
     restart: unless-stopped
-    # runtime: nvidia
+    runtime: nvidia
 
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
 
     networks:
       app-internal-network:
