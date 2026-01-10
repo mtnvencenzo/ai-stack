@@ -101,6 +101,27 @@ Local LLM runtime for running, managing, and serving open-source models. Support
 **API:** [http://localhost:11434](http://localhost:11434)
 **GPU Support:** [Setup with docker](https://github.com/mtnvencenzo/bash/blob/main/docker/gpu.sh)
 
+#### Host machine install
+```bash
+# to install ollama on the host machine and make it available from
+# docker containers (via host.docker.internal)
+curl -fsSL https://ollama.com/install.sh | sh
+
+# By default, Ollama only listens on 127.0.0.1 (localhost) for security reasons. You need to create a systemd override file to change this behavior so that it runs on a non-loopback address so it can be accessible from containers running on non-host networks
+sudo systemctl edit ollama.service
+
+# Add the following lines to the file to set the OLLAMA_HOST variable to 0.0.0.0
+[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+
+# Restart and verify the service
+sudo systemctl daemon-reload
+sudo systemctl restart ollama.service
+
+# Verify - You should see output indicating that it is listening on *:11434 or 0.0.0.0:11434, instead of 127.0.0.1:11434
+sudo ss -antp | grep 11434
+```
+
 ---
 
 ### Qdrant (Vector DB)
