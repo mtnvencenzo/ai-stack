@@ -111,6 +111,38 @@ services:
               count: all
               capabilities: [gpu]
 
+  # Cross-encoder reranker (TEI /rerank endpoint)
+  tei-reranker:
+    container_name: tei-reranker
+    image: ghcr.io/huggingface/text-embeddings-inference:1.8
+    command: ["--model-id", "${TEI_RERANKER_MODEL_ID:-cross-encoder/ms-marco-MiniLM-L-6-v2}", "--max-client-batch-size", "${TEI_RERANKER_MAX_CLIENT_BATCH:-64}", "--port", "${TEI_RERANKER_PORT:-8990}"]
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+      - HF_HOME=/root/.cache/huggingface
+      - CUDA_VISIBLE_DEVICES=all
+      - NVIDIA_VISIBLE_DEVICES=all
+      - API_KEY=${TEI_RERANKER_API_KEY:-6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3}
+    ports:
+      - "${TEI_RERANKER_PORT:-8990}:${TEI_RERANKER_PORT:-8990}"
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:${TEI_RERANKER_PORT:-8990}/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      app-internal-network:
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
 networks:
   app-internal-network:
     external: true
