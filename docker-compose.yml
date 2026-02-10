@@ -147,7 +147,7 @@ services:
   tei-splade:
     container_name: tei-splade
     image: ghcr.io/huggingface/text-embeddings-inference:1.8
-    command: ["--model-id", "${TEI_SPLADE_MODEL_ID:-naver/splade-cocondenser-ensembledistil}", "--max-client-batch-size", "${TEI_SPLADE_MAX_CLIENT_BATCH:-64}", "--port", "${TEI_SPLADE_PORT:-8991}"]
+    command: ["--model-id", "${TEI_SPLADE_MODEL_ID:-naver/splade-cocondenser-ensembledistil}", "--max-client-batch-size", "${TEI_SPLADE_MAX_CLIENT_BATCH:-64}", "--port", "${TEI_SPLADE_PORT:-8991}", "--pooling", "splade"]
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
       - HF_HOME=/root/.cache/huggingface
