@@ -143,6 +143,38 @@ services:
               count: all
               capabilities: [gpu]
 
+  # SPLADE sparse encoder (TEI /embed_sparse endpoint)
+  tei-splade:
+    container_name: tei-splade
+    image: ghcr.io/huggingface/text-embeddings-inference:1.8
+    command: ["--model-id", "${TEI_SPLADE_MODEL_ID:-naver/splade-cocondenser-ensembledistil}", "--max-client-batch-size", "${TEI_SPLADE_MAX_CLIENT_BATCH:-64}", "--port", "${TEI_SPLADE_PORT:-8991}"]
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+      - HF_HOME=/root/.cache/huggingface
+      - CUDA_VISIBLE_DEVICES=all
+      - NVIDIA_VISIBLE_DEVICES=all
+      - API_KEY=${TEI_SPLADE_API_KEY:-6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3}
+    ports:
+      - "${TEI_SPLADE_PORT:-8991}:${TEI_SPLADE_PORT:-8991}"
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -sf http://localhost:${TEI_SPLADE_PORT:-8991}/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      app-internal-network:
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
 networks:
   app-internal-network:
     external: true
