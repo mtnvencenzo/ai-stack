@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventhubs
+  namespace: azure-platform
+  labels:
+    app: eventhubs
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventhubs
+  template:
+    metadata:
+      labels:
+        app: eventhubs
+    spec:
+      containers:
+        - name: eventhubs
+          image: mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest
+          ports:
+            - containerPort: 5672
+              name: amqp
+            - containerPort: 9092
+              name: kafka
+            - containerPort: 5300
+              name: health
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: BLOB_SERVER
+              value: "azurite"
+            - name: METADATA_SERVER
+              value: "azurite"
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: azure-platform-secrets
+                  key: AZURE_STORAGE_CONNECTION_STRING
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+      volumes: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventhubs
+  namespace: azure-platform
+  labels:
+    app: eventhubs
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: eventhubs
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: kafka
+      port: 9092
+      targetPort: 9092
+    - name: health
+      port: 5300
+      targetPort: 5300

@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-platform-config
+  namespace: ai-platform
+  labels:
+    app.kubernetes.io/part-of: ai-platform
+data:
+  # Ollama
+  OLLAMA_HOST: "0.0.0.0"
+  OLLAMA_NUM_GPU: "20"
+
+  # Open WebUI
+  OLLAMA_BASE_URL: "http://ollama:11434"
+  WEBUI_NAME: "AI Stack WebUI"
+  TZ: "UTC"
+
+  # Qdrant
+  QDRANT__LOG_LEVEL: "INFO"
+
+  # TEI Embeddings
+  TEI_MODEL_ID: "sentence-transformers/all-mpnet-base-v2"
+  TEI_MAX_CLIENT_BATCH: "128"
+  TEI_PORT: "8989"
+
+  # TEI Reranker
+  TEI_RERANKER_MODEL_ID: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  TEI_RERANKER_MAX_CLIENT_BATCH: "64"
+  TEI_RERANKER_PORT: "8990"
+
+  # TEI SPLADE
+  TEI_SPLADE_MODEL_ID: "naver/splade-cocondenser-ensembledistil"
+  TEI_SPLADE_MAX_CLIENT_BATCH: "64"
+  TEI_SPLADE_PORT: "8991"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ai-platform-secrets
+  namespace: ai-platform
+  labels:
+    app.kubernetes.io/part-of: ai-platform
+type: Opaque
+stringData:
+  # Hugging Face token – replace with your actual token
+  HF_TOKEN: ""
+  # TEI API keys
+  TEI_API_KEY: "6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3"
+  TEI_RERANKER_API_KEY: "6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3"
+  TEI_SPLADE_API_KEY: "6307fd7e-8ab7-4d21-bf20-3efd2c5a17f3"

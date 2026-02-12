@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastic-platform-config
+  namespace: elastic-platform
+  labels:
+    app.kubernetes.io/part-of: elastic-platform
+data:
+  # Elasticsearch
+  ES_DISCOVERY_TYPE: "single-node"
+  ES_JAVA_OPTS: "-Xms4g -Xmx4g"
+
+  # Kibana
+  ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+
+  # APM Server
+  APM_SERVER_KIBANA_HOST: "kibana:5601"
+  APM_SERVER_OUTPUT_ELASTICSEARCH_HOSTS: "elasticsearch:9200"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: elastic-platform
+  labels:
+    app.kubernetes.io/part-of: elastic-platform
+data:
+  otel-collector-config.yml: |
+    receivers:
+      otlp/insecure:
+        protocols:
+          grpc:
+            endpoint: "0.0.0.0:4317"
+            auth:
+              authenticator: bearertokenauth/server
+          http:
+            endpoint: "0.0.0.0:4318"
+            auth:
+              authenticator: bearertokenauth/server
+            cors:
+              allowed_origins:
+                - "https://localhost:4001"
+                - "http://localhost:4001"
+                - "https://localhost:4002"
+                - "http://localhost:4002"
+              allowed_headers: ["*"]
+              max_age: 600
+      hostmetrics:
+        collection_interval: 10m
+        initial_delay: 1m
+        scrapers:
+          cpu:
+          memory:
+          disk:
+    processors:
+      batch:
+        timeout: 10s
+        send_batch_size: 100
+    exporters:
+      otlp/elastic:
+        endpoint: "http://apm-server:8200"
+        tls:
+          insecure: true
+    extensions:
+      bearertokenauth/server:
+        tokens:
+          - "9c8602c7-6108-4df7-a569-692b06b1e630"
+          - "bd97d99d-f52d-4827-84d5-3760cbc2c8ea"
+          - "00d164bd-2d3d-4d62-8280-e507637def73"
+          - "ad48fafc-3bf1-40d8-ae9c-89a42c5dcc06"
+          - "c2969966-8d8c-4c7c-a4ae-e3b7d491aa24"
+          - "e1851dfc-357a-4908-bda5-a68861d4648a"
+    service:
+      extensions: [bearertokenauth/server]
+      pipelines:
+        traces:
+          receivers: [otlp/insecure]
+          processors: [batch]
+          exporters: [otlp/elastic]
+        metrics:
+          receivers: [otlp/insecure, hostmetrics]
+          processors: [batch]
+          exporters: [otlp/elastic]
+        logs:
+          receivers: [otlp/insecure]
+          processors: [batch]
+          exporters: [otlp/elastic]

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-insight
+  namespace: redis-platform
+  labels:
+    app: redis-insight
+    app.kubernetes.io/part-of: redis-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-insight
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: redis-insight
+    spec:
+      containers:
+        - name: redis-insight
+          image: redis/redisinsight:latest
+          ports:
+            - containerPort: 5540
+              name: http
+          env:
+            - name: RI_REDIS_HOST
+              value: "redis"
+            - name: RI_REDIS_PORT
+              value: "6379"
+            - name: RI_REDIS_TLS_ENABLED
+              value: "false"
+          volumeMounts:
+            - name: redis-insight-data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: redis-insight-data
+          persistentVolumeClaim:
+            claimName: redis-insight-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-insight
+  namespace: redis-platform
+  labels:
+    app: redis-insight
+    app.kubernetes.io/part-of: redis-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: redis-insight
+  ports:
+    - name: http
+      port: 5540
+      targetPort: 5540

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appconfig
+  namespace: azure-platform
+  labels:
+    app: appconfig
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appconfig
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: appconfig
+    spec:
+      containers:
+        - name: appconfig
+          image: mcr.microsoft.com/azure-app-configuration/app-configuration-emulator:1.0.0-preview
+          ports:
+            - containerPort: 8483
+              name: http
+          env:
+            - name: "Tenant:AnonymousAuthEnabled"
+              value: "true"
+            - name: "Authentication:Anonymous:AnonymousUserRole"
+              value: "Owner"
+          volumeMounts:
+            - name: appconfig-data
+              mountPath: /app/.aace
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: appconfig-data
+          persistentVolumeClaim:
+            claimName: appconfig-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appconfig
+  namespace: azure-platform
+  labels:
+    app: appconfig
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: appconfig
+  ports:
+    - name: http
+      port: 8483
+      targetPort: 8483

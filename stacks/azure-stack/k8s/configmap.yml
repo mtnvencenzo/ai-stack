@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azure-platform-config
+  namespace: azure-platform
+  labels:
+    app.kubernetes.io/part-of: azure-platform
+data:
+  # CosmosDB
+  PROTOCOL: "https"
+  EXPLORER_PROTOCOL: "http"
+  DATA_PATH: "/data"
+  AZURE_COSMOS_EMULATOR_ENABLE_DATA_HTTPS: "true"
+  AZURE_COSMOS_EMULATOR_PARTITION_COUNT: "10"
+  AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE: "true"
+
+  # Event Hubs
+  ACCEPT_EULA: "Y"
+  BLOB_SERVER: "azurite"
+  METADATA_SERVER: "azurite"
+
+  # App Configuration
+  TENANT_ANON_AUTH: "true"
+  ANON_USER_ROLE: "Owner"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-platform-secrets
+  namespace: azure-platform
+  labels:
+    app.kubernetes.io/part-of: azure-platform
+type: Opaque
+stringData:
+  # Azurite default storage connection string
+  AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
+  # SQL Server
+  SA_PASSWORD: "StrongPassword123!"
+  MSSQL_SA_PASSWORD: "StrongPassword123!"

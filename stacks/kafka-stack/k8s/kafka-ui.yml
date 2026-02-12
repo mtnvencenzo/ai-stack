@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui
+  namespace: kafka-platform
+  labels:
+    app: kafka-ui
+    app.kubernetes.io/part-of: kafka-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+        - name: kafka-ui
+          image: provectuslabs/kafka-ui:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: KAFKA_CLUSTERS_0_NAME
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+            - name: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
+            - name: KAFKA_CLUSTERS_0_SCHEMAREGISTRY
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: KAFKA_CLUSTERS_0_SCHEMAREGISTRY
+            - name: DYNAMIC_CONFIG_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: DYNAMIC_CONFIG_ENABLED
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui
+  namespace: kafka-platform
+  labels:
+    app: kafka-ui
+    app.kubernetes.io/part-of: kafka-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: kafka-ui
+  ports:
+    - name: http
+      port: 8088
+      targetPort: 8080

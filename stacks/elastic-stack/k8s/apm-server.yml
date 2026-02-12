@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apm-server
+  namespace: elastic-platform
+  labels:
+    app: apm-server
+    app.kubernetes.io/part-of: elastic-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apm-server
+  template:
+    metadata:
+      labels:
+        app: apm-server
+    spec:
+      containers:
+        - name: apm-server
+          image: docker.elastic.co/apm/apm-server:9.1.3
+          ports:
+            - containerPort: 8200
+              name: http
+          env:
+            - name: APM_SERVER_KIBANA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: elastic-platform-config
+                  key: APM_SERVER_KIBANA_HOST
+            - name: APM_SERVER_OUTPUT_ELASTICSEARCH_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  name: elastic-platform-config
+                  key: APM_SERVER_OUTPUT_ELASTICSEARCH_HOSTS
+            - name: xpack.security.enabled
+              value: "false"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apm-server
+  namespace: elastic-platform
+  labels:
+    app: apm-server
+    app.kubernetes.io/part-of: elastic-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: apm-server
+  ports:
+    - name: http
+      port: 8200
+      targetPort: 8200

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dapr-placement
+  namespace: dapr-platform
+  labels:
+    app: dapr-placement
+    app.kubernetes.io/part-of: dapr-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dapr-placement
+  template:
+    metadata:
+      labels:
+        app: dapr-placement
+    spec:
+      containers:
+        - name: dapr-placement
+          image: daprio/dapr:latest
+          command: ["./placement", "-port", "50005"]
+          ports:
+            - containerPort: 50005
+              name: grpc
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dapr-placement
+  namespace: dapr-platform
+  labels:
+    app: dapr-placement
+    app.kubernetes.io/part-of: dapr-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: dapr-placement
+  ports:
+    - name: grpc
+      port: 50005
+      targetPort: 50005

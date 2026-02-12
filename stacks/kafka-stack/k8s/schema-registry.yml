@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: schema-registry
+  namespace: kafka-platform
+  labels:
+    app: schema-registry
+    app.kubernetes.io/part-of: kafka-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: schema-registry
+  template:
+    metadata:
+      labels:
+        app: schema-registry
+    spec:
+      containers:
+        - name: schema-registry
+          image: confluentinc/cp-schema-registry:8.1.0
+          ports:
+            - containerPort: 8081
+              name: http
+          env:
+            - name: SCHEMA_REGISTRY_HOST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: SCHEMA_REGISTRY_HOST_NAME
+            - name: SCHEMA_REGISTRY_LISTENERS
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: SCHEMA_REGISTRY_LISTENERS
+            - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+            - name: SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-platform-config
+                  key: SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-registry
+  namespace: kafka-platform
+  labels:
+    app: schema-registry
+    app.kubernetes.io/part-of: kafka-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: schema-registry
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081

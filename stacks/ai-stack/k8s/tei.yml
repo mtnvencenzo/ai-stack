@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tei
+  namespace: ai-platform
+  labels:
+    app: tei
+    app.kubernetes.io/part-of: ai-platform
+    component: embeddings
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tei
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tei
+        component: embeddings
+    spec:
+      containers:
+        - name: tei
+          image: ghcr.io/huggingface/text-embeddings-inference:1.8
+          args:
+            - "--model-id"
+            - "$(TEI_MODEL_ID)"
+            - "--max-client-batch-size"
+            - "$(TEI_MAX_CLIENT_BATCH)"
+            - "--port"
+            - "$(TEI_PORT)"
+          ports:
+            - containerPort: 8989
+              name: http
+          env:
+            - name: TEI_MODEL_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-platform-config
+                  key: TEI_MODEL_ID
+            - name: TEI_MAX_CLIENT_BATCH
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-platform-config
+                  key: TEI_MAX_CLIENT_BATCH
+            - name: TEI_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-platform-config
+                  key: TEI_PORT
+            - name: HUGGING_FACE_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-platform-secrets
+                  key: HF_TOKEN
+            - name: HF_HOME
+              value: "/root/.cache/huggingface"
+            - name: CUDA_VISIBLE_DEVICES
+              value: "all"
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-platform-secrets
+                  key: TEI_API_KEY
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /root/.cache/huggingface
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "2Gi"
+            limits:
+              cpu: "2"
+              memory: "8Gi"
+              nvidia.com/gpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8989
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8989
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 10
+      runtimeClassName: nvidia
+      volumes:
+        - name: hf-cache
+          persistentVolumeClaim:
+            claimName: hf-cache
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tei
+  namespace: ai-platform
+  labels:
+    app: tei
+    app.kubernetes.io/part-of: ai-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: tei
+  ports:
+    - name: http
+      port: 8989
+      targetPort: 8989

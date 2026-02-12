@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azurite
+  namespace: azure-platform
+  labels:
+    app: azurite
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azurite
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: azurite
+    spec:
+      containers:
+        - name: azurite
+          image: mcr.microsoft.com/azure-storage/azurite:latest
+          command:
+            - "azurite"
+            - "--blobHost"
+            - "0.0.0.0"
+            - "--queueHost"
+            - "0.0.0.0"
+            - "--tableHost"
+            - "0.0.0.0"
+            - "--location"
+            - "/workspace"
+            - "--skipApiVersionCheck"
+          ports:
+            - containerPort: 10000
+              name: blob
+            - containerPort: 10001
+              name: queue
+            - containerPort: 10002
+              name: table
+          volumeMounts:
+            - name: azurite-data
+              mountPath: /workspace
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+      volumes:
+        - name: azurite-data
+          persistentVolumeClaim:
+            claimName: azurite-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azurite
+  namespace: azure-platform
+  labels:
+    app: azurite
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: azurite
+  ports:
+    - name: blob
+      port: 10000
+      targetPort: 10000
+    - name: queue
+      port: 10001
+      targetPort: 10001
+    - name: table
+      port: 10002
+      targetPort: 10002

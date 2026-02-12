@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicebus
+  namespace: azure-platform
+  labels:
+    app: servicebus
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicebus
+  template:
+    metadata:
+      labels:
+        app: servicebus
+    spec:
+      containers:
+        - name: servicebus
+          image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+          ports:
+            - containerPort: 5671
+              name: amqp
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SQL_SERVER
+              value: "sqlserver"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: azure-platform-secrets
+                  key: MSSQL_SA_PASSWORD
+            - name: SQL_WAIT_INTERVAL
+              value: "60"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicebus
+  namespace: azure-platform
+  labels:
+    app: servicebus
+    app.kubernetes.io/part-of: azure-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: servicebus
+  ports:
+    - name: amqp
+      port: 5671
+      targetPort: 5671
