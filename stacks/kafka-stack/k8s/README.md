@@ -25,6 +25,7 @@ kubectl apply -f k8s/pvcs.yml
 kubectl apply -f k8s/kafka-broker.yml
 kubectl apply -f k8s/schema-registry.yml  # depends on kafka
 kubectl apply -f k8s/kafka-ui.yml          # depends on kafka + schema-registry
+kubectl apply -f k8s/ingress.yml
 ```
 
 ## Cross-namespace Access
@@ -34,12 +35,17 @@ kafka-broker-1.kafka-platform.svc.cluster.local:19092   # Internal listener
 schema-registry.kafka-platform.svc.cluster.local:8081
 ```
 
-## Port Forwarding
+## Access
+
+### Web UI (via Ingress)
+
+- **Kafka UI**: http://kafka-ui.127.0.0.1.sslip.io:8080
+
+### Port Forwarding (alternative)
 
 ```bash
 kubectl port-forward -n kafka-platform svc/kafka-broker-1 9092:9092
 kubectl port-forward -n kafka-platform svc/schema-registry 8988:8081
-kubectl port-forward -n kafka-platform svc/kafka-ui 8088:8088
 ```
 
 ## Cleanup

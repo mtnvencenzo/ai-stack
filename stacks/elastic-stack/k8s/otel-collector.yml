@@ -51,7 +51,7 @@ metadata:
     app: otel-collector
     app.kubernetes.io/part-of: elastic-platform
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: otel-collector
   ports:

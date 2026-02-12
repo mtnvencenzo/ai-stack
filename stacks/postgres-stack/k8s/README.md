@@ -23,6 +23,7 @@ kubectl apply -f k8s/configmap.yml
 kubectl apply -f k8s/pvcs.yml
 kubectl apply -f k8s/postgres.yml
 kubectl apply -f k8s/pgadmin.yml    # depends on postgres
+kubectl apply -f k8s/ingress.yml
 ```
 
 ## Cross-namespace Access
@@ -31,11 +32,16 @@ kubectl apply -f k8s/pgadmin.yml    # depends on postgres
 postgres.postgres-platform.svc.cluster.local:5432
 ```
 
-## Port Forwarding
+## Access
+
+### Web UI (via Ingress)
+
+- **pgAdmin**: http://pgadmin.127.0.0.1.sslip.io:8080
+
+### Port Forwarding (alternative)
 
 ```bash
 kubectl port-forward -n postgres-platform svc/postgres 5432:5432
-kubectl port-forward -n postgres-platform svc/pgadmin 5050:5050
 ```
 
 ## Cleanup

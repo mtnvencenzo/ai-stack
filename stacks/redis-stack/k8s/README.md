@@ -22,6 +22,7 @@ kubectl apply -f k8s/namespace.yml
 kubectl apply -f k8s/pvcs.yml
 kubectl apply -f k8s/redis.yml
 kubectl apply -f k8s/redis-insight.yml  # depends on redis
+kubectl apply -f k8s/ingress.yml
 ```
 
 ## Cross-namespace Access
@@ -30,11 +31,16 @@ kubectl apply -f k8s/redis-insight.yml  # depends on redis
 redis.redis-platform.svc.cluster.local:6379
 ```
 
-## Port Forwarding
+## Access
+
+### Web UI (via Ingress)
+
+- **Redis Insight**: http://redis-insight.127.0.0.1.sslip.io:8080
+
+### Port Forwarding (alternative)
 
 ```bash
 kubectl port-forward -n redis-platform svc/redis 6379:6379
-kubectl port-forward -n redis-platform svc/redis-insight 5540:5540
 ```
 
 ## Cleanup

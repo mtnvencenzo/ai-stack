@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rabbitmq-platform-ingress
+  namespace: rabbitmq-platform
+  labels:
+    app.kubernetes.io/part-of: rabbitmq-platform
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    # RabbitMQ Management UI – accessible at http://rabbitmq.127.0.0.1.sslip.io:8080
+    - host: rabbitmq.127.0.0.1.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq
+                port:
+                  number: 15672

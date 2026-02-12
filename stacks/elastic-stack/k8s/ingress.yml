@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: elastic-platform-ingress
+  namespace: elastic-platform
+  labels:
+    app.kubernetes.io/part-of: elastic-platform
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    # Kibana – accessible at http://kibana.127.0.0.1.sslip.io:8080
+    - host: kibana.127.0.0.1.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kibana
+                port:
+                  number: 5601
