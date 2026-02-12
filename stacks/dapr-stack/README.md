@@ -1,5 +1,5 @@
 # Dapr Self-Hosted Setup
-This repo contains a Docker Compose setup for running Dapr in self-hosted mode, providing all the necessary runtime services exactly as created by the `dapr init` CLI command. It offers a quick way to get a complete Dapr runtime environment for local development and testing of distributed applications.
+This stack contains a Docker Compose setup for running Dapr in self-hosted mode, providing all the necessary runtime services exactly as created by the `dapr init` CLI command. It offers a quick way to get a complete Dapr runtime environment for local development and testing of distributed applications.
 
 ![Dapr Architecture Diagram](./assets/dapr-stack.drawio.svg)
 
@@ -19,7 +19,7 @@ All containers run within a dedicated `dapr-network` bridge network for secure i
 
 ## 🚀 Setup & Usage
 
-> The setup in this repo is geared for local development usage and should not be considered for production without adjustments.
+> This setup is geared for local development usage and should not be considered for production without adjustments.
 
 ### 1. Start the Dapr runtime services:
 

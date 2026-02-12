@@ -1,5 +1,5 @@
 # Postgres Stack
-This repo contains a Docker Compose setup for running PostgreSQL locally with pgAdmin for development and testing. It provides a simple, production-ready PostgreSQL environment with a web-based management UI.
+This stack contains a Docker Compose setup for running PostgreSQL locally with pgAdmin for development and testing. It provides a simple, production-ready PostgreSQL environment with a web-based management UI.
 
 ![Postgres Architecture Diagram](./assets/postgres-stack.drawio.svg)
 
@@ -18,11 +18,11 @@ All containers run within a dedicated `app-internal-network` bridge network for 
 
 ## 🚀 Setup & Usage
 
-> The setup in this repo is geared for local development usage and should not be considered for production without adjustments.
+> This setup is geared for local development usage and should not be considered for production without adjustments.
 
 ### 1. Create the external network:
 
-If you haven't already created the `app-internal-network` network for your stack repositories, create it first:
+If you haven't already created the `app-internal-network` network for other stacks, create it first:
 
 ```bash
 docker network create app-internal-network

@@ -1,6 +1,6 @@
-# 🤖 Contributing to AI Stack
+# 🛠️ Contributing to Platform Ops
 
-Thank you for your interest in contributing to the AI Stack project! We welcome contributions that improve this local AI engineering environment (LLMs, RAG, notebooks, experiment tracking) and its documentation and developer experience.
+Thank you for your interest in contributing to the Platform Ops project! We welcome contributions that improve these Docker Compose stacks for local development environments and their documentation and developer experience.
 
 ## 📋 Table of Contents
 
@@ -22,13 +22,14 @@ Before you begin, ensure you have the following installed:
 ### 🗂️ Project Structure
 
 ```text
-├── docker-compose.yml        # AI engineering services (Ollama, Open WebUI, Qdrant, TEI, etc.)
-├── .env.example              # Default environment variables
-├── mnt/                      # Persistent data directories (git-ignored)
-│   ├── open-webui/
-│   ├── ollama/
-│   ├── qdrant/
-│   └── hf_cache/
+├── stacks/                   # Docker Compose stacks
+│   ├── ai-stack/             # AI engineering services
+│   ├── azure-stack/          # Azure service emulators
+│   ├── kafka-stack/          # Kafka environment
+│   └── ...                   # Other stacks
+├── dev-certs/                # Development SSL certificates
+├── docker-setup/             # Docker management scripts
+├── INSTALL_K8S.md            # Kubernetes installation guide
 └── .github/                  # GitHub workflows and templates
 ```
 
@@ -36,13 +37,16 @@ Before you begin, ensure you have the following installed:
 
 1. **Fork and Clone the Repository**
    ```bash
-   git clone https://github.com/mtnvencenzo/ai-stack.git
-   cd ai-stack
+   git clone https://github.com/mtnvencenzo/platform-ops.git
+   cd platform-ops
    ```
 
-2. **Start the AI Stack Services**
+2. **Start a Stack**
    ```bash
-   # Start all services
+   # Navigate to a stack directory
+   cd stacks/ai-stack
+   
+   # Start services
    docker compose up -d
    
    # Verify services are running
@@ -50,20 +54,7 @@ Before you begin, ensure you have the following installed:
    ```
 
 3. **Test the Setup**
-   ```bash
-   # Open WebUI
-   curl -sSf http://localhost:3000 >/dev/null && echo "Open WebUI OK"
-
-   # Ollama tags (after container is up)
-   curl -sSf http://localhost:11434/api/tags >/dev/null && echo "Ollama OK"
-
-   # Qdrant readiness
-   curl -sSf http://localhost:6333/readyz >/dev/null && echo "Qdrant OK"
-
-   # Embeddings server health (TEI)
-   curl -sSf http://localhost:8080/health >/dev/null && echo "TEI OK"
-
-   ```
+   - Follow the README in each stack directory for specific health checks and verification steps
 
 ## 🔄 Contributing Process
 
@@ -121,7 +112,7 @@ Before you begin, ensure you have the following installed:
 
 ### 🐳 Docker & Docker Compose
 
-- Prefer official or well-maintained images (Ollama, Open WebUI, Qdrant, HuggingFace TEI)
+- Prefer official or well-maintained images
 - Follow Docker best practices for service configuration
 - Use meaningful container and service names
 - Include proper health checks where available
@@ -162,17 +153,17 @@ Use our issue templates for:
 
 ### ❓ Common Questions
 
-**Q: How do I run the AI Stack locally?**
-A: Follow the Development Setup above. Use `docker compose up -d`.
+**Q: How do I run a stack locally?**
+A: Navigate to the stack directory and use `docker compose up -d`.
 
 **Q: How do I test if the services are working?**
-A: Use the health endpoints listed in the Validation Steps.
+A: Check the README in each stack for specific health endpoints and verification steps.
 
 **Q: Can I contribute without approval?**
 A: No, all contributors must be approved by maintainers before making changes.
 
-**Q: How do I add a new AI service?**
-A: Add it to `docker-compose.yml` with a clear name, volumes, and healthcheck; document in `README.md`.
+**Q: How do I add a new service to a stack?**
+A: Add it to the stack's `docker-compose.yml` with a clear name, volumes, and healthcheck; document in the stack's `README.md`.
 
 ## 📜 License
 

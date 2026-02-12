@@ -1,5 +1,5 @@
 # Overview
-This repo contains development certificates used through mtnvencenzo docker compose stacks and applications.  These certs are for local development purposes only.
+This folder contains development certificates used through mtnvencenzo docker compose stacks and applications.  These certs are for local development purposes only.
 
 ## Docker local
 The main purpose of the [docker-local](./docker-local/README.md) certs was to have a common certificate for all my containers

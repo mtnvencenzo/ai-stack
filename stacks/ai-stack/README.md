@@ -1,6 +1,6 @@
 # AI Stack - Local AI Engineering Environment
 
-This repository provides a Docker Compose setup for running a modern local AI engineering environment. It focuses on the most in-demand skills: LLMs, RAG, vector databases, embeddings, and experiment tracking.
+This stack provides a Docker Compose setup for running a modern local AI engineering environment. It focuses on the most in-demand skills: LLMs, RAG, vector databases, embeddings, and experiment tracking.
 
 ![AI Stack](./assets/ai-stack.drawio.svg)
 

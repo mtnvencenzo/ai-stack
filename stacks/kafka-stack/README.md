@@ -1,7 +1,7 @@
 
 # Kafka Stack - Local Kafka Environment
 
-This repository provides a Docker Compose setup for running a local Kafka environment in **two modes**:
+This stack provides a Docker Compose setup for running a local Kafka environment in **two modes**:
 - **KRaft mode** (no Zookeeper required, modern Kafka architecture with Schema Registry)
 - **Zookeeper mode** (classic Kafka architecture with Schema Registry)
 

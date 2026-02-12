@@ -1,7 +1,7 @@
 
 # RabbitMQ Stack - Local RabbitMQ Environment
 
-This repository provides a Docker Compose setup for running a local RabbitMQ environment with management UI and SSL/TLS support for secure messaging.
+This stack provides a Docker Compose setup for running a local RabbitMQ environment with management UI and SSL/TLS support for secure messaging.
 
 ![RabbitMq Stack](./assets/rabbitmq-stack.drawio.svg)
 

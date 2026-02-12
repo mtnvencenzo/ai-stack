@@ -1,6 +1,6 @@
 # Azure Stack - Local Development Environment
 
-This repository provides a Docker Compose setup for running Azure service emulators locally, giving you a complete Azure development environment without needing cloud resources. Perfect for local development, testing, and CI/CD pipelines.
+This stack provides a Docker Compose setup for running Azure service emulators locally, giving you a complete Azure development environment without needing cloud resources. Perfect for local development, testing, and CI/CD pipelines.
 
 ![Azure Stack Architecture](./assets/azure-stack.drawio.svg)
 

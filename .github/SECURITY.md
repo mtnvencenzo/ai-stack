@@ -11,7 +11,7 @@ We release patches for security vulnerabilities. Which versions are eligible for
 
 ## 🚨 Reporting a Vulnerability
 
-The AI Stack team takes security bugs seriously. We appreciate your efforts to responsibly disclose your findings, and will make every effort to acknowledge your contributions.
+The Platform Ops team takes security bugs seriously. We appreciate your efforts to responsibly disclose your findings, and will make every effort to acknowledge your contributions.
 
 ### Where to Report
 
@@ -55,9 +55,9 @@ We believe in acknowledging security researchers who help improve our security:
 
 ### For Developers
 
-- 🛡️ **Container Security**: Prefer official or well-maintained images (Ollama, Open WebUI, Qdrant, Hugging Face TEI)
+- 🛡️ **Container Security**: Prefer official or well-maintained images
 - 🔒 **Network Isolation**: Configure proper network segmentation; expose only necessary ports
-- 🔑 **Secrets Management**: Keep tokens like `HF_TOKEN` out of git; use `.env` files or secret managers
+- 🔑 **Secrets Management**: Keep sensitive tokens out of git; use `.env` files or secret managers
 - 📊 **Monitoring**: Monitor container logs for unusual activity
 - 🔄 **Updates**: Keep Docker images updated via Dependabot
 
@@ -79,4 +79,4 @@ Our security measures include:
 
 ---
 
-Thank you for helping keep AI Stack and our users safe! 🤖
+Thank you for helping keep Platform Ops and our users safe! 🛠️

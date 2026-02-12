@@ -1,5 +1,5 @@
 # Elastic Stack w/OpenTelemetry Collector
-This repo contains a common docker compose setup for the Elastic Stack using Elastic Search, Elastic APM, Kibana and an Open Teleemetry Collector.  It provides a quick way to collect, process, and forward traces, metrics, and logs from your applications to an Elastic Stack instance for monitoring and analysis.
+This stack contains a common docker compose setup for the Elastic Stack using Elastic Search, Elastic APM, Kibana and an Open Teleemetry Collector.  It provides a quick way to collect, process, and forward traces, metrics, and logs from your applications to an Elastic Stack instance for monitoring and analysis.
 
 
 
@@ -19,7 +19,7 @@ This repo contains a common docker compose setup for the Elastic Stack using Ela
 
 ## 🚀 Setup & Usage
 
-> The setup in this repo is geared for local development usage and should not be considered for production without adjustments.
+> This setup is geared for local development usage and should not be considered for production without adjustments.
 
 
 ### 1. Start the Elastic ELK stack services:

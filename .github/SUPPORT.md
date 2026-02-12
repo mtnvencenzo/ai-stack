@@ -1,6 +1,6 @@
 # 🆘 Support
 
-Need help with AI Stack? We're here to help! This document provides information about how to get support for this local AI engineering environment (LLMs, RAG, notebooks, experiment tracking).
+Need help with Platform Ops? We're here to help! This document provides information about how to get support for these Docker Compose stacks for local development environments.
 
 ## 📋 Table of Contents
 
@@ -24,15 +24,15 @@ Before asking for help, please check our documentation:
 
 ### 💬 Ask Questions
 
-If you have questions about using AI Stack:
+If you have questions about using Platform Ops:
 
 1. **GitHub Discussions** 💬
-   - [Start a discussion](https://github.com/mtnvencenzo/ai-stack/discussions)
+   - [Start a discussion](https://github.com/mtnvencenzo/platform-ops/discussions)
    - Browse existing discussions
    - Best for: General questions, setup help, configuration issues
 
 2. **GitHub Issues** 🐛
-   - [Create an issue](https://github.com/mtnvencenzo/ai-stack/issues/new/choose)
+   - [Create an issue](https://github.com/mtnvencenzo/platform-ops/issues/new/choose)
    - Use our issue templates
    - Best for: Bug reports, service failures, feature requests
 
@@ -56,7 +56,7 @@ Found a bug? Help us fix it!
 
 ### 📮 How to Report
 
-1. Use our **[Bug Report Template](https://github.com/mtnvencenzo/ai-stack/issues/new?template=bug_report.md)**
+1. Use our **[Bug Report Template](https://github.com/mtnvencenzo/platform-ops/issues/new?template=bug_report.md)**
 2. Provide detailed information:
    - Steps to reproduce
    - Expected behavior
@@ -73,21 +73,21 @@ Found a bug? Help us fix it!
 
 ## ✨ Feature Requests
 
-Have an idea for improving AI Stack?
+Have an idea for improving Platform Ops?
 
 ### 🧠 Before Requesting
 
 1. **Check existing issues** for similar requests
-2. **Consider the scope** - does it fit the project's goals (local AI engineering with LLMs, RAG, notebooks, and experiment tracking)? 
+2. **Consider the scope** - does it fit the project's goals (Docker Compose stacks for local development)?
 3. **Think about implementation** - how would it work with Docker Compose?
 
 ### 📨 How to Request
 
-1. Use our **[User Story Template](https://github.com/mtnvencenzo/ai-stack/issues/new?template=user-story-template.md)**
+1. Use our **[User Story Template](https://github.com/mtnvencenzo/platform-ops/issues/new?template=user-story-template.md)**
 2. Provide clear information:
-   - What AI service or capability would you like to add?
+   - What service or capability would you like to add?
    - How would it work with the existing setup?
-   - Why is it important for local AI development?
+   - Why is it important for local development?
    - Any implementation ideas or Docker image suggestions?
 
 ### 📊 Evaluation Process
@@ -115,7 +115,7 @@ Want to contribute code, documentation, or other improvements?
 
 ## 🌐 Community
 
-Join our community of AI engineers and developers!
+Join our community of developers!
 
 ### 📣 Stay Updated
 
@@ -143,14 +143,14 @@ Need professional support or custom development?
 
 - 🚀 **Status**: Active development
 - 🎯 **Maintainer**: [@mtnvencenzo](https://github.com/mtnvencenzo)
-- 📈 **Roadmap**: See [Issues](https://github.com/mtnvencenzo/ai-stack/issues) for planned improvements
+- 📈 **Roadmap**: See [Issues](https://github.com/mtnvencenzo/platform-ops/issues) for planned improvements
 
 ## 🙏 Thank You
 
-Thank you for your interest in AI Stack! Whether you're reporting bugs, suggesting new services, or contributing improvements, your involvement helps make local AI development better for everyone.
+Thank you for your interest in Platform Ops! Whether you're reporting bugs, suggesting new services, or contributing improvements, your involvement helps make local development better for everyone.
 
 ---
 
-Happy AI development! 🤖
+Happy developing! 🛠️
 
-*Last updated: October 2025*
+*Last updated: February 2026*

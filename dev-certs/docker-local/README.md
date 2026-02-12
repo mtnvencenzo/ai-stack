@@ -11,7 +11,7 @@ IP.2 = ::1
 ```
 
 ## Regenerate ssl
-This contains fully functional dev certs but if you would like to trust other host names you can regenerate them. First, update the docker-local.conf file with any additions or changes you would like to make, then run the below script using the root of the repo as your working directory.
+This contains fully functional dev certs but if you would like to trust other host names you can regenerate them. First, update the docker-local.conf file with any additions or changes you would like to make, then run the below script using the root of the repository as your working directory.
 
 
 ```bash

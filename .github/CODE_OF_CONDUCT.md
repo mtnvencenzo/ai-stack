@@ -1,8 +1,8 @@
-# 🤖 AI Stack Code of Conduct
+# 🛠️ Platform Ops Code of Conduct
 
 ## 🤝 Our Pledge
 
-We as members, contributors, and leaders pledge to make participation in the AI Stack project and our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
+We as members, contributors, and leaders pledge to make participation in the Platform Ops project and our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
 
@@ -31,7 +31,7 @@ Maintainers have the right and responsibility to remove, edit, or reject contrib
 
 ## 🌍 Scope
 
-This Code of Conduct applies within all community spaces, including GitHub issues, pull requests, discussions, documentation, and any other project-related channels. It also applies when an individual is officially representing the AI Stack community in public spaces such as using an official project e-mail address, posting via official social media accounts, or acting as an appointed representative at an online or offline event.
+This Code of Conduct applies within all community spaces, including GitHub issues, pull requests, discussions, documentation, and any other project-related channels. It also applies when an individual is officially representing the Platform Ops community in public spaces such as using an official project e-mail address, posting via official social media accounts, or acting as an appointed representative at an online or offline event.
 
 ## 🚨 Enforcement
 

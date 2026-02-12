@@ -1,5 +1,5 @@
 # Redis Stack
-This repo contains a Docker Compose setup for running Redis locally with RedisInsight for development and testing. It provides a simple, lightweight Redis environment with a web-based management UI.
+This stack contains a Docker Compose setup for running Redis locally with RedisInsight for development and testing. It provides a simple, lightweight Redis environment with a web-based management UI.
 
 ![Redis Architecture Diagram](./assets/redis-stack.drawio.svg)
 
@@ -18,7 +18,7 @@ All containers run within a dedicated `redis-network` bridge network for secure 
 
 ## 🚀 Setup & Usage
 
-> The setup in this repo is geared for local development usage and should not be considered for production without adjustments.
+> This setup is geared for local development usage and should not be considered for production without adjustments.
 
 ### 1. Start the Redis services:
 
