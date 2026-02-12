@@ -16,6 +16,10 @@ A collection of Docker Compose stacks for local development environments. Each s
 | [redis-stack](./redis-stack/README.md) | Redis server with AOF persistence and RedisInsight web UI |
 | [dev-certs](./dev-certs/README.md) | Development SSL certificates shared across docker compose stacks |
 
+## Kubernetes
+
+For setting up a local Kubernetes cluster using Docker and k3d, with Rancher for cluster management and ArgoCD for GitOps-based continuous delivery, see the [Kubernetes Installation Guide](./INSTALL_K8S.md).
+
 ## Prerequisites
 
 - Docker 24+ and Docker Compose v2
