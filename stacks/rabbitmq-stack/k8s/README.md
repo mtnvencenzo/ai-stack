@@ -11,7 +11,7 @@ Kubernetes manifests for deploying RabbitMQ to a local k3d cluster.
 ## Deploy
 
 ```bash
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 Or individually:

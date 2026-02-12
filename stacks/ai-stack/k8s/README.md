@@ -81,6 +81,14 @@ Or apply everything at once:
 kubectl apply -f k8s/
 ```
 
+Or use Kustomize (recommended):
+
+```bash
+kubectl apply -k k8s/overlays/main/
+```
+
+This will apply all core AI stack resources in the correct order.
+
 ## Configuration
 
 ### Secrets

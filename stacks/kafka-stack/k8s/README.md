@@ -1,32 +1,50 @@
 # Kafka Platform – Kubernetes Manifests (k3d)
 
-Kubernetes manifests for deploying Kafka (KRaft mode) to a local k3d cluster.
+Kubernetes manifests for deploying Kafka to a local k3d cluster. Three overlay variants are available:
+
+| Overlay | Description | Compose Equivalent |
+|---|---|---|
+| **kraft** | Single-node KRaft (default) | `docker-compose.yml` |
+| **kraft-3broker** | 3-node KRaft cluster | `docker-compose-3broker.yml` |
+| **zookeeper** | Zookeeper-based single broker | `docker-compose-zoo.yml` |
+
+## Structure
+
+```
+k8s/
+├── base/                      # Shared: namespace, schema-registry, kafka-ui, ingress
+├── overlays/
+│   ├── kraft/                  # Single-node KRaft broker
+│   ├── kraft-3broker/          # 3-node KRaft cluster
+│   └── zookeeper/             # Zookeeper + single broker
+└── README.md
+```
 
 ## Services
 
 | Service | Description | Internal Port | K8s Service |
 |---|---|---|---|
-| **Kafka Broker** | Confluent Kafka (KRaft, single node) | 9092/19092 | `kafka-broker-1:9092`, `kafka-broker-1:19092` |
+| **Kafka Broker** | Confluent Kafka | 9092/19092 | `kafka-broker-1:9092`, `kafka-broker-1:19092` |
 | **Schema Registry** | Confluent Schema Registry | 8081 | `schema-registry:8081` |
 | **Kafka UI** | Web UI for Kafka management | 8080 | `kafka-ui:8088` |
+| **Zookeeper** *(zoo overlay only)* | Apache Zookeeper | 2181 | `zookeeper:2181` |
 
 ## Deploy
 
-```bash
-kubectl apply -f k8s/
-```
-
-Or in dependency order:
+Pick an overlay:
 
 ```bash
-kubectl apply -f k8s/namespace.yml
-kubectl apply -f k8s/configmap.yml
-kubectl apply -f k8s/pvcs.yml
-kubectl apply -f k8s/kafka-broker.yml
-kubectl apply -f k8s/schema-registry.yml  # depends on kafka
-kubectl apply -f k8s/kafka-ui.yml          # depends on kafka + schema-registry
-kubectl apply -f k8s/ingress.yml
+# KRaft single-node (default)
+kubectl apply -k k8s/overlays/kraft/
+
+# KRaft 3-broker cluster
+kubectl apply -k k8s/overlays/kraft-3broker/
+
+# Zookeeper-based
+kubectl apply -k k8s/overlays/zookeeper/
 ```
+
+> **Note:** Only deploy one overlay at a time — they share the same namespace and resource names.
 
 ## Cross-namespace Access
 

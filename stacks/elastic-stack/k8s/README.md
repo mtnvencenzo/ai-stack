@@ -14,7 +14,7 @@ Kubernetes manifests for deploying the Elastic observability stack to a local k3
 ## Deploy
 
 ```bash
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 Or in dependency order:

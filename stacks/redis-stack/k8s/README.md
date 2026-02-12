@@ -12,7 +12,7 @@ Kubernetes manifests for deploying Redis and Redis Insight to a local k3d cluste
 ## Deploy
 
 ```bash
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 Or in dependency order:

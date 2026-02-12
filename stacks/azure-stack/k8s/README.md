@@ -16,7 +16,7 @@ Kubernetes manifests for deploying Azure emulators/simulators to a local k3d clu
 ## Deploy
 
 ```bash
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 Or individually in dependency order:

@@ -15,7 +15,7 @@ Kubernetes manifests for deploying Dapr sidecar infrastructure to a local k3d cl
 ## Deploy
 
 ```bash
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 Or individually:

@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-platform-config
+  namespace: kafka-platform
+  labels:
+    app.kubernetes.io/part-of: kafka-platform
+data:
+  # Shared Kafka Broker config
+  KAFKA_PROCESS_ROLES: "broker,controller"
+  KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-broker-1:9094,2@kafka-broker-2:9094,3@kafka-broker-3:9094"
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT"
+  KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+  KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT_INTERNAL"
+  CLUSTER_ID: "EmptNWtoR4GGWx-BH6nGLQ"
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "3"
+  KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+  KAFKA_DEFAULT_REPLICATION_FACTOR: "3"
+  KAFKA_MIN_INSYNC_REPLICAS: "2"
+  KAFKA_CONTROLLER_QUORUM_ELECTION_TIMEOUT_MS: "10000"
+  KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: "5000"
+  KAFKA_CONTROLLER_QUORUM_REQUEST_TIMEOUT_MS: "5000"
+  KAFKA_CONTROLLER_QUORUM_ELECTION_BACKOFF_MAX_MS: "2000"
+  KAFKA_BROKER_HEARTBEAT_INTERVAL_MS: "2000"
+  KAFKA_BROKER_SESSION_TIMEOUT_MS: "9000"
+  KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS: "10000"
+  KAFKA_METADATA_MAX_IDLE_INTERVAL_MS: "10000"
+  KAFKA_CONNECTIONS_MAX_IDLE_MS: "10000"
+
+  # Schema Registry
+  SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
+  SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+  SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-broker-1:19092,kafka-broker-2:19093,kafka-broker-3:19095"
+  SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: "PLAINTEXT"
+
+  # Kafka UI
+  KAFKA_CLUSTERS_0_NAME: "local"
+  KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-broker-1:19092,kafka-broker-2:19093,kafka-broker-3:19095"
+  KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: "PLAINTEXT"
+  KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://schema-registry:8081"
+  DYNAMIC_CONFIG_ENABLED: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-kraft-scripts
+  namespace: kafka-platform
+  labels:
+    app.kubernetes.io/part-of: kafka-platform
+data:
+  kafka-kraft-start.sh: |
+    #!/bin/bash
+    set -e
+
+    # First, generate the Kafka configuration
+    echo "Generating Kafka configuration..."
+    /etc/confluent/docker/configure
+
+    # Check if storage has been formatted by looking for meta.properties
+    if [ ! -f /var/lib/kafka/data/meta.properties ]; then
+      echo "Storage not formatted. Formatting now..."
+      kafka-storage format -t ${CLUSTER_ID} -c /etc/kafka/kafka.properties
+      echo "Storage formatted successfully."
+    else
+      echo "Storage already formatted. Skipping format step."
+    fi
+
+    # Start Kafka
+    echo "Starting Kafka broker..."
+    /etc/confluent/docker/launch

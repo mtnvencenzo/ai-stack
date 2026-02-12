@@ -12,7 +12,7 @@ Kubernetes manifests for deploying PostgreSQL and pgAdmin to a local k3d cluster
 ## Deploy
 
 ```bash
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 Or in dependency order:
