@@ -151,16 +151,5 @@ For production use:
 - Implement proper network security and firewall rules
 - Regularly update PostgreSQL and pgAdmin images
 
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [SECURITY.md](.github/SECURITY.md)
-
-## 📄 License
-
-This project is licensed under the terms of the repository's main LICENSE file.
-
 ---
 For more information, see the official documentation for [PostgreSQL](https://www.postgresql.org/docs/) and [pgAdmin](https://www.pgadmin.org/docs/).

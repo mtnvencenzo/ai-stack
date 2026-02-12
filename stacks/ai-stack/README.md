@@ -152,13 +152,5 @@ Fast, production-grade embeddings server for generating vector representations f
 ### Port Configuration
 - Most endpoints use standard ports; override any port in `.env`
 
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [.github/CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [.github/SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [.github/SECURITY.md](.github/SECURITY.md)
-
-## 📄 License
-
-This project is licensed under the terms of the repository's main LICENSE file.
+---
+For more information, see the official documentation for [Open WebUI](https://docs.openwebui.com/), [Ollama](https://ollama.com/), [Qdrant](https://qdrant.tech/documentation/), [Text Embeddings Inference](https://huggingface.co/docs/text-embeddings-inference/), and [Langfuse](https://langfuse.com/docs).

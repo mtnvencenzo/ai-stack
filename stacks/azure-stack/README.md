@@ -298,16 +298,5 @@ Based on official Microsoft documentation and container analysis:
 - **[Event Hubs Config](https://github.com/Azure/azure-event-hubs-emulator-installer/blob/main/EventHub-Emulator/Config/Config.json)** - Default Event Hubs configuration
 - **[Service Bus Config](https://github.com/Azure/azure-service-bus-emulator-installer/blob/main/ServiceBus-Emulator/Config/Config.json)** - Default Service Bus configuration
 
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [SECURITY.md](.github/SECURITY.md)
-
-## 📄 License
-
-This project is licensed under the terms of the repository's main LICENSE file.
-
 ---
 For more information about Azure service emulators, see the official [Azure documentation](https://docs.microsoft.com/azure/).

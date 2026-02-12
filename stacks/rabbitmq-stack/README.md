@@ -150,13 +150,5 @@ python -c "import pika, ssl; context = ssl.create_default_context(); context.che
 - **Default vhost**: `/` (can be customized via configuration)
 - Ports can be changed in `docker-compose.yml` as needed
 
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [.github/CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [.github/SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [.github/SECURITY.md](.github/SECURITY.md)
-
-## 📄 License
-
-This project is licensed under the terms of the repository's main LICENSE file.
+---
+For more information, see the official documentation for [RabbitMQ](https://www.rabbitmq.com/documentation.html) and [RabbitMQ Management Plugin](https://www.rabbitmq.com/docs/management).

@@ -89,16 +89,5 @@ redis-cli -h localhost -p 6379 ping
   - Verify both containers are on the same network: `docker network inspect redis-stack_redis-network`
   - Check Redis health: `docker exec redis redis-cli ping`
 
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [SECURITY.md](.github/SECURITY.md)
-
-## 📄 License
-
-This project is licensed under the terms of the repository's main LICENSE file.
-
 ---
 For more information, see the official documentation for [Redis](https://redis.io/docs/) and [RedisInsight](https://redis.io/docs/connect/insight/).

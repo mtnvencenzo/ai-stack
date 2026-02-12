@@ -207,13 +207,5 @@ Classic Kafka stack with Zookeeper and Schema Registry.
 - Ports can be changed in the compose file as needed.
 - Service dependencies are managed via `depends_on` with health conditions.
 
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [.github/CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [.github/SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [.github/SECURITY.md](.github/SECURITY.md)
-
-## 📄 License
-
-This project is licensed under the terms of the repository's main LICENSE file.
+---
+For more information, see the official documentation for [Apache Kafka](https://kafka.apache.org/documentation/), [Confluent Schema Registry](https://docs.confluent.io/platform/current/schema-registry/index.html), and [Kafka UI](https://docs.kafka-ui.provectus.io/).

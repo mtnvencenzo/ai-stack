@@ -90,16 +90,5 @@ All containers run within a dedicated `dapr-network` bridge network for secure i
 - Validate that Docker has sufficient resources allocated for all containers.
 - Check that volumes have proper permissions for data persistence.
 
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [SECURITY.md](.github/SECURITY.md)
-
-## 📄 License
-
-This project is licensed under the terms of the repository's main LICENSE file.
-
 ---
 For more information, see the official documentation for [Dapr](https://docs.dapr.io/) and [Dapr Self-Hosted Mode](https://docs.dapr.io/operations/hosting/self-hosted/).
