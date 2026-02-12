@@ -1,0 +1,49 @@
+name: redis-stack
+services:
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: [
+      "--appendonly yes",
+      "--port 6379",
+    ]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      app-internal-network:
+    volumes:
+      - vol_redis:/data
+
+  redis-insight:
+    container_name: redis-insight
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    restart: unless-stopped
+    environment:
+      - RI_REDIS_HOST=redis
+      - RI_REDIS_PORT=6379
+      - RI_REDIS_TLS_ENABLED=false
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      app-internal-network:
+    volumes:
+      - vol_redis_insight:/data
+
+networks:
+  app-internal-network:
+    external: true
+    name: app-internal-network
+
+volumes:
+  vol_redis:
+  vol_redis_insight:

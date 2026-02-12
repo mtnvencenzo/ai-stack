@@ -1,0 +1,33 @@
+name: dapr-stack
+services:
+  dapr_placement:
+    container_name: dapr_placement
+    image: daprio/dapr:latest
+    command: ["./placement", "-port", "50005"]
+    ports:
+      - "50005:50005"
+    restart: unless-stopped
+    networks:
+      - app-host-network
+
+  dapr_scheduler:
+    container_name: dapr_scheduler
+    image: daprio/dapr:latest
+    command: ["./scheduler", "--port", "50006", "--etcd-data-dir", "/data"]
+    ports:
+      - "50006:50006"
+      - "52379:2379"
+    restart: unless-stopped
+    networks:
+      - app-host-network
+    volumes:
+      - vol_scheduler:/data
+    user: "0:0"
+
+networks:
+  app-host-network:
+    external: true
+    name: app-host-network
+
+volumes:
+  vol_scheduler:

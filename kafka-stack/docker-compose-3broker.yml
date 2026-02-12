@@ -1,0 +1,165 @@
+name: kafka-stack
+
+services:
+  kafka-broker-1:
+    container_name: kafka-broker-1
+    image: confluentinc/cp-kafka:8.1.0
+    ports:
+      - "9092:9092"
+      - "19092:19092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-broker-1:9094,2@kafka-broker-2:9094,3@kafka-broker-3:9094'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:19092,CONTROLLER://kafka-broker-1:9094'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka-broker-1:19092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+      KAFKA_CONTROLLER_QUORUM_ELECTION_TIMEOUT_MS: 10000
+      KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 5000
+      KAFKA_CONTROLLER_QUORUM_REQUEST_TIMEOUT_MS: 5000
+      KAFKA_CONTROLLER_QUORUM_ELECTION_BACKOFF_MAX_MS: 2000
+      KAFKA_BROKER_HEARTBEAT_INTERVAL_MS: 2000
+      KAFKA_BROKER_SESSION_TIMEOUT_MS: 9000
+      KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS: 10000
+      KAFKA_METADATA_MAX_IDLE_INTERVAL_MS: 10000
+      KAFKA_CONNECTIONS_MAX_IDLE_MS: 10000
+    entrypoint: /scripts/kafka-kraft-start.sh
+    volumes:
+      - vol_kafka1:/var/lib/kafka/data
+      - ./scripts:/scripts
+    restart: unless-stopped
+    networks:
+      app-internal-network:
+
+  kafka-broker-2:
+    container_name: kafka-broker-2
+    image: confluentinc/cp-kafka:8.1.0
+    ports:
+      - "9093:9093"
+      - "19093:19093"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_BROKER_ID: 2
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-broker-1:9094,2@kafka-broker-2:9094,3@kafka-broker-3:9094'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9093,PLAINTEXT_INTERNAL://0.0.0.0:19093,CONTROLLER://kafka-broker-2:9094'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9093,PLAINTEXT_INTERNAL://kafka-broker-2:19093'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+      KAFKA_CONTROLLER_QUORUM_ELECTION_TIMEOUT_MS: 10000
+      KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 5000
+      KAFKA_CONTROLLER_QUORUM_REQUEST_TIMEOUT_MS: 5000
+      KAFKA_CONTROLLER_QUORUM_ELECTION_BACKOFF_MAX_MS: 2000
+      KAFKA_BROKER_HEARTBEAT_INTERVAL_MS: 2000
+      KAFKA_BROKER_SESSION_TIMEOUT_MS: 9000
+      KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS: 10000
+      KAFKA_METADATA_MAX_IDLE_INTERVAL_MS: 10000
+      KAFKA_CONNECTIONS_MAX_IDLE_MS: 10000
+    entrypoint: /scripts/kafka-kraft-start.sh
+    volumes:
+      - vol_kafka2:/var/lib/kafka/data
+      - ./scripts:/scripts
+    restart: unless-stopped
+    networks:
+      app-internal-network:
+
+  kafka-broker-3:
+    container_name: kafka-broker-3
+    image: confluentinc/cp-kafka:8.1.0
+    ports:
+      - "9095:9095"
+      - "19095:19095"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_BROKER_ID: 3
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-broker-1:9094,2@kafka-broker-2:9094,3@kafka-broker-3:9094'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9095,PLAINTEXT_INTERNAL://0.0.0.0:19095,CONTROLLER://kafka-broker-3:9094'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9095,PLAINTEXT_INTERNAL://kafka-broker-3:19095'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+      KAFKA_CONTROLLER_QUORUM_ELECTION_TIMEOUT_MS: 10000
+      KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 5000
+      KAFKA_CONTROLLER_QUORUM_REQUEST_TIMEOUT_MS: 5000
+      KAFKA_CONTROLLER_QUORUM_ELECTION_BACKOFF_MAX_MS: 2000
+      KAFKA_BROKER_HEARTBEAT_INTERVAL_MS: 2000
+      KAFKA_BROKER_SESSION_TIMEOUT_MS: 9000
+      KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS: 10000
+      KAFKA_METADATA_MAX_IDLE_INTERVAL_MS: 10000
+      KAFKA_CONNECTIONS_MAX_IDLE_MS: 10000
+    entrypoint: /scripts/kafka-kraft-start.sh
+    volumes:
+      - vol_kafka3:/var/lib/kafka/data
+      - ./scripts:/scripts
+    restart: unless-stopped
+    networks:
+      app-internal-network:
+
+  schema-registry:
+    hostname: schema-registry.
+    container_name: schema-registry
+    image: confluentinc/cp-schema-registry:8.1.0
+    ports:
+      - '8988:8081'
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka-broker-1:19092,kafka-broker-2:19093,kafka-broker-3:19095'
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: 'PLAINTEXT'
+    restart: unless-stopped
+    depends_on:
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+    networks:
+      app-internal-network:
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8088:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker-1:19092,kafka-broker-2:19093,kafka-broker-3:19095
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: PLAINTEXT
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    restart: unless-stopped
+    depends_on:
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+      - schema-registry
+    networks:
+      app-internal-network:
+
+networks:
+  app-internal-network:
+    external: true
+    name: app-internal-network
+
+volumes:
+  vol_kafka1:
+  vol_kafka2:
+  vol_kafka3:

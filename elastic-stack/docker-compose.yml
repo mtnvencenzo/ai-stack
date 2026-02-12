@@ -1,0 +1,97 @@
+name: elastic-stack
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.3
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false # For development, disable security
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - bootstrap.memory_lock=true # Disable swapping
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g" # Adjust heap size as needed
+    ports:
+      - "9200:9200"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health?wait_for_status=yellow"]
+      interval: 20s
+      timeout: 15s
+      retries: 30
+      start_period: 20s
+    ulimits:
+      # Required for Elasticsearch to function correctly
+      # Disable swapping
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - vol_elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      app-internal-network:
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:9.1.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false # For development, disable security
+    ports:
+      - "5601:5601"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5601/api/status"] # Or a more specific Kibana readiness endpoint
+      interval: 10s
+      timeout: 5s
+      retries: 240
+      start_period: 60s # Give Kibana time to start before checking
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      app-internal-network:
+
+  apm-server:
+    container_name: apm-server
+    image: docker.elastic.co/apm/apm-server:9.1.3
+    environment:
+      - APM_SERVER_KIBANA_HOST=kibana:5601
+      - APM_SERVER_OUTPUT_ELASTICSEARCH_HOSTS=elasticsearch:9200
+      - xpack.security.enabled=false # For development, disable security
+    ports:
+      - "8200:8200" # APM Server intake port
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy # Technically not dependent ubt gives a visual indicator that Kibana is up (its slow to start)
+    networks:
+      app-internal-network:
+
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector-contrib:0.134.1 
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml # Mount your OTel Collector config
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver (Insecure)
+      - "4318:4318"   # OTLP Http receiver (Insecure)
+    restart: unless-stopped
+    depends_on:
+      - apm-server
+    networks:
+      app-internal-network:
+
+networks:
+  app-internal-network:
+    external: true
+    name: app-internal-network
+
+volumes:
+  vol_elasticsearch:

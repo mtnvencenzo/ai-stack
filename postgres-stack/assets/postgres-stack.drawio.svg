@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f5f5f5"/>
+  
+  <!-- Title -->
+  <text x="400" y="30" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#333">
+    Postgres Stack Architecture
+  </text>
+  
+  <!-- Network Box -->
+  <rect x="50" y="60" width="700" height="300" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+  <text x="400" y="85" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#666">
+    app-internal-network
+  </text>
+  
+  <!-- PostgreSQL Container -->
+  <rect x="100" y="120" width="250" height="200" fill="#336791" rx="8"/>
+  <text x="225" y="150" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">
+    PostgreSQL
+  </text>
+  <text x="225" y="180" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="white">
+    postgres:16-alpine
+  </text>
+  <text x="225" y="210" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    Port: 5432
+  </text>
+  <text x="225" y="230" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    User: admin
+  </text>
+  <text x="225" y="250" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    Database: postgres
+  </text>
+  <rect x="120" y="270" width="210" height="30" fill="#2d5a7a" rx="5"/>
+  <text x="225" y="290" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    vol_postgres
+  </text>
+  
+  <!-- pgAdmin Container -->
+  <rect x="450" y="120" width="250" height="200" fill="#326690" rx="8"/>
+  <text x="575" y="150" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">
+    pgAdmin 4
+  </text>
+  <text x="575" y="180" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="white">
+    dpage/pgadmin4:latest
+  </text>
+  <text x="575" y="210" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    Port: 5050 (HTTP)
+  </text>
+  <text x="575" y="230" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    Web UI for PostgreSQL
+  </text>
+  <text x="575" y="250" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    Management
+  </text>
+  <rect x="470" y="270" width="210" height="30" fill="#244a66" rx="5"/>
+  <text x="575" y="290" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white">
+    vol_pgadmin
+  </text>
+  
+  <!-- Connection Arrow -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666" />
+    </marker>
+  </defs>
+  <line x1="350" y1="220" x2="450" y2="220" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="400" y="210" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">
+    connects to
+  </text>
+  
+  <!-- External Access -->
+  <text x="225" y="380" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">
+    localhost:5432
+  </text>
+  <line x1="225" y1="320" x2="225" y2="365" stroke="#666" stroke-width="2" stroke-dasharray="3,3"/>
+  
+  <text x="575" y="380" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">
+    http://localhost:5050
+  </text>
+  <line x1="575" y1="320" x2="575" y2="365" stroke="#666" stroke-width="2" stroke-dasharray="3,3"/>
+</svg>

@@ -1,0 +1,69 @@
+# otel-collector-config.yml
+receivers:
+  # Accepts insecure (non-tls) data from OpenTelemetry-instrumented services via OTLP over gRPC and HTTP.
+  otlp/insecure:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+        auth:
+          authenticator: bearertokenauth/server
+      http:
+        endpoint: "0.0.0.0:4318"
+        auth:
+          authenticator: bearertokenauth/server
+        cors:
+          allowed_origins: [
+            "https://localhost:4001",
+            "http://localhost:4001",
+            "https://localhost:4002",
+            "http://localhost:4002"
+          ]
+          allowed_headers: ["*"]
+          max_age: 600
+
+  hostmetrics:
+    collection_interval: 10m # default = 1m
+    initial_delay: 1m # default = 1s
+    scrapers:
+      cpu:
+      memory:
+      disk:
+
+processors:
+  # Batches data before sending to improve efficiency and reduce API calls.
+  batch:
+    timeout: 10s
+    send_batch_size: 100
+
+exporters:
+  # The Elastic exporter translates OpenTelemetry data to Elastic's protocol.
+  otlp/elastic:
+    endpoint: "http://apm-server:8200" # Target the APM Server within the Docker network.
+    tls:
+      insecure: true # Use this for local testing only; use proper TLS in production.
+
+extensions:
+  bearertokenauth/server: # Adjust or remove the auth settings as needed.
+    tokens:
+      - "9c8602c7-6108-4df7-a569-692b06b1e630" # 1
+      - "bd97d99d-f52d-4827-84d5-3760cbc2c8ea" # 2
+      - "00d164bd-2d3d-4d62-8280-e507637def73" # 3
+      - "ad48fafc-3bf1-40d8-ae9c-89a42c5dcc06" # 4
+      - "c2969966-8d8c-4c7c-a4ae-e3b7d491aa24" # 5
+      - "e1851dfc-357a-4908-bda5-a68861d4648a" # 6
+
+service:
+  extensions: [bearertokenauth/server] # Adjust or remove the auth settings as needed.
+  pipelines:
+    traces:
+      receivers: [otlp/insecure]
+      processors: [batch]
+      exporters: [otlp/elastic]
+    metrics:
+      receivers: [otlp/insecure, hostmetrics]
+      processors: [batch]
+      exporters: [otlp/elastic]
+    logs:
+      receivers: [otlp/insecure]
+      processors: [batch]
+      exporters: [otlp/elastic]

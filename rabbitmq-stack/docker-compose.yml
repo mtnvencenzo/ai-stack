@@ -1,0 +1,33 @@
+name: rabbitmq-stack
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 5s
+      timeout: 15s
+      retries: 30
+    networks:
+      app-internal-network:
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - vol_rabbitmq-lib:/var/lib/rabbitmq
+      - vol_rabbitmq-logs:/var/log/rabbitmq
+
+networks:
+  app-internal-network:
+    external: true
+    name: app-internal-network
+
+volumes:
+  vol_rabbitmq-lib:
+  vol_rabbitmq-logs:
