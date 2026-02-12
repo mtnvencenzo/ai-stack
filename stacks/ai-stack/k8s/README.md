@@ -28,6 +28,7 @@ To pass your GPU into k3d, create your cluster with the NVIDIA runtime:
 k3d cluster create prd-local-apps-001 \
   -p "8080:80@loadbalancer" \
   -p "8443:443@loadbalancer" \
+  --agents 2
   --gpus all
 ```
 

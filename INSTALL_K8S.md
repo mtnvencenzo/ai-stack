@@ -54,7 +54,11 @@ Create a new cluster using k3d, which spins up K3s inside Docker:
 
 ``` shell
 k3d cluster delete prd-local-apps-001
-k3d cluster create prd-local-apps-001 -p "8080:80@loadbalancer" -p "8443:443@loadbalancer"
+k3d cluster create prd-local-apps-001 \
+  -p "8080:80@loadbalancer" \
+  -p "9443:443@loadbalancer" \
+  --agents 2 \
+  --gpus all
 ```
 
 ### Step 5: Verify the Cluster 
@@ -163,7 +167,12 @@ helm install cert-manager jetstack/cert-manager \
   --create-namespace \
   --version v1.19.3 \
   --set installCRDs=true
+
+# Setup the cluster issuer
+kubectl apply -f k8s-setup/cluster-cert-issuer.yml
 ```
+
+
 
 _Note: Check the cert-manager documentation for the latest version and CRD installation instructions._
 
@@ -281,6 +290,58 @@ kubectl rollout restart deployment argocd-server -n argocd
 ```
 
 ### Browse to Argo CD
-http://argocd.127.0.0.1.sslip.io:8080
+http://argocd.127.0.0.1.sslip.io
 
-_Note: 8080 is used here because thats the port mapping we used from the host machine to the cluster_
+_Note: if using an non standard (80) port number like 8080 then that port would need to be used on the ingress urls when access them_
+
+<br />
+
+## Enable NVIDIA GPU Support in k3d
+
+### 1. Install NVIDIA Drivers on the Host
+
+Make sure your host system has the latest NVIDIA drivers installed.  
+You can check with:
+
+```bash
+nvidia-smi
+```
+
+If not installed, follow the official NVIDIA instructions for your OS.
+
+### 2. Install NVIDIA Container Toolkit
+
+This allows Docker to use the GPU.
+
+```bash
+# Add the package repositories
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+sudo apt-get update
+sudo apt-get install -y nvidia-docker2
+sudo systemctl restart docker
+```
+
+### 3. Install the NVIDIA Device Plugin in Kubernetes
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.17.0/deployments/static/nvidia-device-plugin.yml
+```
+
+### 5. Create the NVIDIA RuntimeClass
+
+```yaml
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: nvidia
+handler: nvidia
+```
+
+Apply it:
+
+```bash
+kubectl apply -f k8s-setup/nvidia-runtime-class.yml
+```
