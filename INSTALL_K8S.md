@@ -54,9 +54,10 @@ Create a new cluster using k3d, which spins up K3s inside Docker:
 
 ``` shell
 k3d cluster delete prd-local-apps-001
+
 k3d cluster create prd-local-apps-001 \
   -p "8080:80@loadbalancer" \
-  -p "9443:443@loadbalancer" \
+  -p "8443:443@loadbalancer" \
   --agents 2 \
   --gpus all
 ```
@@ -167,6 +168,12 @@ helm install cert-manager jetstack/cert-manager \
   --create-namespace \
   --version v1.19.3 \
   --set installCRDs=true
+
+# If reinstalling rancher and already had CRDs from cert manager run these commands
+kubectl get crds | grep cattle
+kubectl delete crd $(kubectl get crds | grep cattle | awk '{print $1}')
+kubectl get crds | grep rancher
+kubectl delete crd $(kubectl get crds | grep rancher | awk '{print $1}')
 
 # Setup the cluster issuer
 kubectl apply -f k8s-setup/cluster-cert-issuer.yml
